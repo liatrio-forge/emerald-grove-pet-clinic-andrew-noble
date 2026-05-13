@@ -22,9 +22,15 @@ The Emerald Grove Veterinary Clinic application manages the core operations of a
 ### Run Application
 
 ```bash
-# Clone the repository
-git clone https://github.com/liatrio-labs/spring-petclinic-enhanced
-cd spring-petclinic-enhanced
+# Clone the repository (upstream)
+git clone https://github.com/liatrio-labs/emerald-grove-pet-clinic
+cd emerald-grove-pet-clinic
+
+# Boeing engineers: clone from the Boeing GitLab fork instead. Replace
+# the URL above with your Boeing GitLab clone URL once it exists.
+# Example:
+#   git clone git@gitlab.boeing.com:greenfield/emerald-grove-pet-clinic.git
+#   cd emerald-grove-pet-clinic
 
 # Run with Maven
 ./mvnw spring-boot:run

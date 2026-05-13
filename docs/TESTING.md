@@ -702,6 +702,31 @@ jobs:
       run: ./mvnw jacoco:report
 ```
 
+### GitLab CI (Boeing fork)
+
+Equivalent `.gitlab-ci.yml` for the Boeing GitLab fork:
+
+```yaml
+stages:
+  - test
+
+test:
+  stage: test
+  image: maven:3.9-eclipse-temurin-17
+  script:
+    - ./mvnw test
+    - ./mvnw jacoco:report
+  artifacts:
+    when: always
+    reports:
+      junit: target/surefire-reports/TEST-*.xml
+    paths:
+      - target/site/jacoco/
+```
+
+The runner image and any private-registry credentials are Boeing
+specific. **TBD:** the approved Maven image inside Boeing GitLab.
+
 ### Test Environments
 
 Different test environments:
@@ -901,6 +926,11 @@ A lightweight accessibility scan is available in `e2e-tests/tests/a11y/` and use
 ### CI
 
 GitHub Actions workflow: `.github/workflows/e2e-tests.yml`
+
+On the Boeing GitLab fork: equivalent `.gitlab-ci.yml` job. See the
+"Boeing GitLab port notes" doc on the Boeing site for the mapping
+(image, before-script, artifacts paths). The same Playwright HTML
+report and artifacts get uploaded as job artifacts.
 
 CI uploads the Playwright HTML report and artifacts as workflow run artifacts.
 

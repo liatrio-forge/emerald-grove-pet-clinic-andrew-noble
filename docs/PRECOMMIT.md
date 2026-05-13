@@ -302,6 +302,16 @@ exclude: |
     pre-commit run --all-files
 ```
 
+### GitLab CI Example (Boeing fork)
+
+```yaml
+pre-commit:
+  image: python:3.12
+  script:
+    - pip install pre-commit
+    - pre-commit run --all-files
+```
+
 ### Jenkins Pipeline
 
 ```groovy
