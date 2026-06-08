@@ -65,6 +65,31 @@
             <span th:text="#{error}">Error</span>
           </li>
 
+          <li class="nav-item dropdown" data-testid="language-selector">
+            <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button"
+              data-bs-toggle="dropdown" aria-expanded="false" th:title="#{language}">
+              <span class="fa fa-language" aria-hidden="true"></span>
+              <span th:text="#{language}">Language</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+              <li>
+                <a class="dropdown-item" th:classappend="${#locale.language == 'en'} ? ' active'"
+                  th:attr="aria-current=${#locale.language == 'en'} ? 'true' : null" th:href="@{''(lang='en')}"
+                  th:text="'English'">English</a>
+              </li>
+              <li>
+                <a class="dropdown-item" th:classappend="${#locale.language == 'es'} ? ' active'"
+                  th:attr="aria-current=${#locale.language == 'es'} ? 'true' : null" th:href="@{''(lang='es')}"
+                  th:text="'Español'">Español</a>
+              </li>
+              <li>
+                <a class="dropdown-item" th:classappend="${#locale.language == 'de'} ? ' active'"
+                  th:attr="aria-current=${#locale.language == 'de'} ? 'true' : null" th:href="@{''(lang='de')}"
+                  th:text="'Deutsch'">Deutsch</a>
+              </li>
+            </ul>
+          </li>
+
         </ul>
       </div>
     </div>

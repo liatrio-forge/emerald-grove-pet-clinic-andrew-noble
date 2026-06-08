@@ -41,7 +41,7 @@ Tasks derived from
 
 ## Tasks
 
-### [ ] 1.0 Render the language selector in the header with switching and active-state
+### [x] 1.0 Render the language selector in the header with switching and active-state
 
 #### 1.0 Proof Artifact(s)
 
@@ -59,25 +59,25 @@ Tasks derived from
 
 #### 1.0 Tasks
 
-- [ ] 1.1 (RED) Create `LanguageSelectorViewTests` with a test that GETs `/` and
+- [x] 1.1 (RED) Create `LanguageSelectorViewTests` with a test that GETs `/` and
   asserts the response HTML contains a language dropdown in the navbar with
   three option links carrying `?lang=en`, `?lang=es`, `?lang=de`. Run it and
   confirm it fails because the selector does not exist yet.
-- [ ] 1.2 (RED) Add a test method that GETs `/?lang=es`, asserts a Spanish nav
+- [x] 1.2 (RED) Add a test method that GETs `/?lang=es`, asserts a Spanish nav
   label (e.g. "Inicio") is rendered, and asserts the Spanish option has an
   `active` marker. Confirm it fails for the right reason.
-- [ ] 1.3 Add a `language` label key to `messages.properties` (`Language`),
+- [x] 1.3 Add a `language` label key to `messages.properties` (`Language`),
   `messages_es.properties` (`Idioma`), and `messages_de.properties` (`Sprache`),
   matching existing key style.
-- [ ] 1.4 (GREEN) Add a Bootstrap dropdown to the `ms-auto` nav list in
+- [x] 1.4 (GREEN) Add a Bootstrap dropdown to the `ms-auto` nav list in
   `fragments/layout.html`: a toggle labeled `#{language}` (showing the current
   language), and three `dropdown-item` links to the current request URI with
   `?lang=en|es|de` appended (preserving the existing path), labeled with the
   native names. Mark the item matching `${#locale.language}` as `active`.
-- [ ] 1.5 (GREEN/REFACTOR) Run `LanguageSelectorViewTests` until green; tidy the
+- [x] 1.5 (GREEN/REFACTOR) Run `LanguageSelectorViewTests` until green; tidy the
   template markup (accessibility attributes, consistent indentation) while
   keeping tests green.
-- [ ] 1.6 Capture the expanded-dropdown screenshot for the proof artifact (manual
+- [x] 1.6 Capture the expanded-dropdown screenshot for the proof artifact (manual
   run or a small Playwright snippet) and save it under
   `e2e-tests/test-results/artifacts/`.
 
