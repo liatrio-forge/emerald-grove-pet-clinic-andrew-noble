@@ -81,7 +81,7 @@ Tasks derived from
   run or a small Playwright snippet) and save it under
   `e2e-tests/test-results/artifacts/`.
 
-### [ ] 2.0 Prove language switching and session persistence end-to-end (Playwright)
+### [x] 2.0 Prove language switching and session persistence end-to-end (Playwright)
 
 #### 2.0 Proof Artifact(s)
 
@@ -99,19 +99,19 @@ Tasks derived from
 
 #### 2.0 Tasks
 
-- [ ] 2.1 Extend the global header Page Object (`base-page.ts`) with
+- [x] 2.1 Extend the global header Page Object (`base-page.ts`) with
   `openLanguageMenu()`, `selectLanguage(name)`, and an `activeLanguage()` locator
   targeting the new dropdown.
-- [ ] 2.2 (RED) Create `language-selector.spec.ts`: open the home page, switch to
+- [x] 2.2 (RED) Create `language-selector.spec.ts`: open the home page, switch to
   "Español", and assert nav text becomes Spanish (e.g. "Inicio" / "Buscar
   propietarios"). Run it (`npm test -- --grep "language"`) and verify the
   assertion drives behavior (fails if the template/POM is incomplete).
-- [ ] 2.3 Add a persistence assertion: after switching to Spanish, navigate to
+- [x] 2.3 Add a persistence assertion: after switching to Spanish, navigate to
   Find Owners and then Veterinarians via the header and assert the nav/page text
   remains Spanish, and that `activeLanguage()` reports Spanish.
-- [ ] 2.4 Capture `home-en.png` and `home-es.png` screenshots within the spec for
+- [x] 2.4 Capture `home-en.png` and `home-es.png` screenshots within the spec for
   the proof artifacts.
-- [ ] 2.5 Run the spec to green and confirm the Playwright HTML report records it.
+- [x] 2.5 Run the spec to green and confirm the Playwright HTML report records it.
 
 ### [ ] 3.0 Guard against header regressions and finalize verification
 
