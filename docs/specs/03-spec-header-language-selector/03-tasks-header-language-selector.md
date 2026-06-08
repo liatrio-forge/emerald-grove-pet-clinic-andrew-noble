@@ -113,7 +113,7 @@ Tasks derived from
   the proof artifacts.
 - [x] 2.5 Run the spec to green and confirm the Playwright HTML report records it.
 
-### [ ] 3.0 Guard against header regressions and finalize verification
+### [x] 3.0 Guard against header regressions and finalize verification
 
 #### 3.0 Proof Artifact(s)
 
@@ -128,14 +128,14 @@ Tasks derived from
 
 #### 3.0 Tasks
 
-- [ ] 3.1 Run `./mvnw test`; if any existing test that asserts on navbar/header
+- [x] 3.1 Run `./mvnw test`; if any existing test that asserts on navbar/header
   content breaks due to the new element, update that assertion (not the
   requirement) and document why.
-- [ ] 3.2 Run `cd e2e-tests && npm test`; confirm all specs (existing navigation
+- [x] 3.2 Run `cd e2e-tests && npm test`; confirm all specs (existing navigation
   specs + new `language-selector.spec.ts`) pass.
-- [ ] 3.3 Confirm new Java code meets the ≥90% line-coverage standard via the
+- [x] 3.3 Confirm new Java code meets the ≥90% line-coverage standard via the
   JaCoCo report from `./mvnw test` (the change is template-driven, so verify no
   new uncovered Java was introduced).
-- [ ] 3.4 Stage proof screenshots (sanitized, no secrets), commit on the feature
+- [x] 3.4 Stage proof screenshots (sanitized, no secrets), commit on the feature
   branch with a Conventional Commit message, and confirm pre-commit hooks pass
   (`maven-test-check`, `markdownlint`, `no-direct-commits-to-main`).
