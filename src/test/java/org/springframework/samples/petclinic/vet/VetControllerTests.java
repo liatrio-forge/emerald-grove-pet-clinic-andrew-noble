@@ -145,6 +145,14 @@ class VetControllerTests {
 	}
 
 	@Test
+	void testPageBelowOneIsTreatedAsFirstPage() throws Exception {
+		mockMvc.perform(get("/vets.html?page=0"))
+			.andExpect(status().isOk())
+			.andExpect(model().attribute("currentPage", is(1)))
+			.andExpect(model().attribute("listVets", hasSize(5)));
+	}
+
+	@Test
 	void testInvalidSpecialtyShowsEmptyListAndFallsBackToAll() throws Exception {
 		mockMvc.perform(get("/vets.html?specialty=bogus"))
 			.andExpect(status().isOk())

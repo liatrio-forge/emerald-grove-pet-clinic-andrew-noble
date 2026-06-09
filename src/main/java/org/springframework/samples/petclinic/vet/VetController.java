@@ -58,18 +58,19 @@ class VetController {
 			@RequestParam(name = "specialty", required = false) String specialty, Model model) {
 		// Here we are returning an object of type 'Vets' rather than a collection of Vet
 		// objects so it is simpler for Object-Xml mapping
+		int currentPage = Math.max(page, 1);
 		List<Vet> allVets = new ArrayList<>(this.vetRepository.findAll());
 
 		List<String> availableSpecialties = distinctSpecialtyNames(allVets);
 		String selectedSpecialty = normalizeSelection(specialty, availableSpecialties);
 		List<Vet> filteredVets = filterVets(allVets, specialty, availableSpecialties);
 
-		Page<Vet> paginated = paginate(filteredVets, page);
+		Page<Vet> paginated = paginate(filteredVets, currentPage);
 		Vets vets = new Vets();
 		vets.getVetList().addAll(paginated.toList());
 		model.addAttribute("specialties", availableSpecialties);
 		model.addAttribute("selectedSpecialty", selectedSpecialty);
-		return addPaginationModel(page, paginated, model);
+		return addPaginationModel(currentPage, paginated, model);
 	}
 
 	private String addPaginationModel(int page, Page<Vet> paginated, Model model) {

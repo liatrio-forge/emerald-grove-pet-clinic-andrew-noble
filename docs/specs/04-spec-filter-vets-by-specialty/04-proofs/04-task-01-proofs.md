@@ -81,6 +81,29 @@ Name Specialties Helen Leary radiology Henry Stevens radiology
 <option value="radiology" selected="selected">
 ```
 
+## Artifact: Page-bounds hardening (code-review follow-up)
+
+**What it proves:** A `page` value of 0 or negative is treated as the first page
+instead of throwing `IllegalArgumentException` (HTTP 500).
+
+**Why it matters:** A pre-existing edge case (carried over from the original
+`findPaginated`) was caught during code review; `Math.max(page, 1)` now guards
+the `PageRequest` so hand-typed/crawled `?page=0` URLs render page 1.
+
+**Command:**
+
+```bash
+./mvnw test -Dtest=VetControllerTests
+```
+
+**Result summary:** `testPageBelowOneIsTreatedAsFirstPage` passes —
+`/vets.html?page=0` returns HTTP 200 with `currentPage=1`; all 10 tests green.
+
+```text
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0 -- in ...vet.VetControllerTests
+[INFO] BUILD SUCCESS
+```
+
 ## Reviewer Conclusion
 
 The controller correctly implements specialty filtering with all required edge
