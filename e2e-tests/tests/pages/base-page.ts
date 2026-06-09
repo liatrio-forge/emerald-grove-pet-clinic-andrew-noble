@@ -30,4 +30,23 @@ export abstract class BasePage {
   async screenshot(path: string): Promise<void> {
     await this.page.screenshot({ path, fullPage: true });
   }
+
+  // --- Header language selector ---------------------------------------------
+
+  languageSelector(): Locator {
+    return this.page.locator('[data-testid="language-selector"]');
+  }
+
+  async openLanguageMenu(): Promise<void> {
+    await this.languageSelector().locator('.dropdown-toggle').click();
+  }
+
+  async selectLanguage(name: string | RegExp): Promise<void> {
+    await this.openLanguageMenu();
+    await this.languageSelector().getByRole('link', { name }).click();
+  }
+
+  activeLanguageOption(): Locator {
+    return this.languageSelector().locator('.dropdown-item.active');
+  }
 }
