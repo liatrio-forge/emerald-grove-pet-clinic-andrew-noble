@@ -16,6 +16,9 @@
 
 package org.springframework.samples.petclinic.vet;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,6 +34,15 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.everyItem;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -51,32 +63,39 @@ class VetControllerTests {
 	@MockitoBean
 	private VetRepository vets;
 
-	private Vet james() {
-		Vet james = new Vet();
-		james.setFirstName("James");
-		james.setLastName("Carter");
-		james.setId(1);
-		return james;
+	private Vet vet(int id, String firstName, String lastName, String... specialtyNames) {
+		Vet vet = new Vet();
+		vet.setId(id);
+		vet.setFirstName(firstName);
+		vet.setLastName(lastName);
+		int specialtyId = 1;
+		for (String specialtyName : specialtyNames) {
+			Specialty specialty = new Specialty();
+			specialty.setId(specialtyId++);
+			specialty.setName(specialtyName);
+			vet.addSpecialty(specialty);
+		}
+		return vet;
 	}
 
-	private Vet helen() {
-		Vet helen = new Vet();
-		helen.setFirstName("Helen");
-		helen.setLastName("Leary");
-		helen.setId(2);
-		Specialty radiology = new Specialty();
-		radiology.setId(1);
-		radiology.setName("radiology");
-		helen.addSpecialty(radiology);
-		return helen;
+	/**
+	 * Seed-like sample: James (no specialty), Helen (radiology), Linda (surgery,
+	 * dentistry), Rafael (surgery), Sharon (no specialty).
+	 */
+	private List<Vet> sampleVets() {
+		List<Vet> vetList = new ArrayList<>();
+		vetList.add(vet(1, "James", "Carter"));
+		vetList.add(vet(2, "Helen", "Leary", "radiology"));
+		vetList.add(vet(3, "Linda", "Douglas", "surgery", "dentistry"));
+		vetList.add(vet(4, "Rafael", "Ortega", "surgery"));
+		vetList.add(vet(6, "Sharon", "Jenkins"));
+		return vetList;
 	}
 
 	@BeforeEach
 	void setup() {
-		given(this.vets.findAll()).willReturn(Lists.newArrayList(james(), helen()));
-		given(this.vets.findAll(any(Pageable.class)))
-			.willReturn(new PageImpl<Vet>(Lists.newArrayList(james(), helen())));
-
+		given(this.vets.findAll()).willReturn(sampleVets());
+		given(this.vets.findAll(any(Pageable.class))).willReturn(new PageImpl<Vet>(sampleVets()));
 	}
 
 	@Test
@@ -91,10 +110,94 @@ class VetControllerTests {
 
 	@Test
 	void testShowResourcesVetList() throws Exception {
+		given(this.vets.findAll()).willReturn(Lists.newArrayList(vet(1, "James", "Carter")));
 		ResultActions actions = mockMvc.perform(get("/vets").accept(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk());
 		actions.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 			.andExpect(jsonPath("$.vetList[0].id").value(1));
+	}
+
+	@Test
+	void testFilterByNamedSpecialtyShowsOnlyMatchingVets() throws Exception {
+		mockMvc.perform(get("/vets.html?specialty=surgery"))
+			.andExpect(status().isOk())
+			.andExpect(model().attribute("listVets", hasSize(2)))
+			.andExpect(model().attribute("listVets",
+					everyItem(hasProperty("specialties", hasItem(hasProperty("name", is("surgery")))))))
+			.andExpect(model().attribute("selectedSpecialty", is("surgery")));
+	}
+
+	@Test
+	void testFilterByNoneShowsOnlyVetsWithoutSpecialties() throws Exception {
+		mockMvc.perform(get("/vets.html?specialty=none"))
+			.andExpect(status().isOk())
+			.andExpect(model().attribute("listVets", hasSize(2)))
+			.andExpect(model().attribute("listVets", everyItem(hasProperty("nrOfSpecialties", is(0)))))
+			.andExpect(model().attribute("selectedSpecialty", is("none")));
+	}
+
+	@Test
+	void testNoFilterShowsAllVets() throws Exception {
+		mockMvc.perform(get("/vets.html"))
+			.andExpect(status().isOk())
+			.andExpect(model().attribute("listVets", hasSize(5)))
+			.andExpect(model().attribute("selectedSpecialty", is("all")));
+	}
+
+	@Test
+	void testPageBelowOneIsTreatedAsFirstPage() throws Exception {
+		mockMvc.perform(get("/vets.html?page=0"))
+			.andExpect(status().isOk())
+			.andExpect(model().attribute("currentPage", is(1)))
+			.andExpect(model().attribute("listVets", hasSize(5)));
+	}
+
+	@Test
+	void testInvalidSpecialtyShowsEmptyListAndFallsBackToAll() throws Exception {
+		mockMvc.perform(get("/vets.html?specialty=bogus"))
+			.andExpect(status().isOk())
+			.andExpect(model().attribute("listVets", empty()))
+			.andExpect(model().attribute("selectedSpecialty", is("all")));
+	}
+
+	@Test
+	void testModelExposesAvailableSpecialtyOptionsSortedAndDistinct() throws Exception {
+		mockMvc.perform(get("/vets.html"))
+			.andExpect(status().isOk())
+			.andExpect(model().attribute("specialties", contains("dentistry", "radiology", "surgery")));
+	}
+
+	@Test
+	void testSelectedSpecialtyOptionIsMarkedSelectedInDropdown() throws Exception {
+		mockMvc.perform(get("/vets.html?specialty=surgery"))
+			.andExpect(status().isOk())
+			.andExpect(content().string(containsString("name=\"specialty\"")))
+			.andExpect(content().string(containsString("<option value=\"surgery\" selected")));
+	}
+
+	@Test
+	void testFilteredResultsPaginateAndPreserveFilterAcrossPages() throws Exception {
+		// Eight vets all share the "surgery" specialty -> 2 pages at page size 5.
+		List<Vet> manySurgeons = new ArrayList<>();
+		for (int i = 1; i <= 8; i++) {
+			manySurgeons.add(vet(i, "Vet" + i, "Surgeon", "surgery"));
+		}
+		given(this.vets.findAll()).willReturn(manySurgeons);
+
+		mockMvc.perform(get("/vets.html?specialty=surgery&page=1"))
+			.andExpect(status().isOk())
+			.andExpect(model().attribute("totalItems", is(8L)))
+			.andExpect(model().attribute("totalPages", is(2)))
+			.andExpect(model().attribute("listVets", hasSize(5)));
+
+		mockMvc.perform(get("/vets.html?specialty=surgery&page=2"))
+			.andExpect(status().isOk())
+			.andExpect(model().attribute("currentPage", is(2)))
+			.andExpect(model().attribute("selectedSpecialty", is("surgery")))
+			.andExpect(model().attribute("listVets", hasSize(3)))
+			.andExpect(model().attribute("listVets",
+					everyItem(hasProperty("specialties", hasItem(hasProperty("name", is("surgery")))))))
+			.andExpect(model().attribute("listVets", not(empty())));
 	}
 
 }
