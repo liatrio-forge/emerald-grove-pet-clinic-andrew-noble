@@ -159,6 +159,17 @@ class OwnerControllerTests {
 	}
 
 	@Test
+	void testProcessFindFormPageBelowOneIsTreatedAsFirstPage() throws Exception {
+		Page<Owner> tasks = new PageImpl<>(List.of(george(), new Owner()));
+		when(this.owners.findByOptionalCriteria(anyString(), anyString(), anyString(), any(Pageable.class)))
+			.thenReturn(tasks);
+		mockMvc.perform(get("/owners?page=0"))
+			.andExpect(status().isOk())
+			.andExpect(model().attribute("currentPage", is(1)))
+			.andExpect(view().name("owners/ownersList"));
+	}
+
+	@Test
 	void testProcessFindFormByLastName() throws Exception {
 		Page<Owner> tasks = new PageImpl<>(List.of(george()));
 		when(this.owners.findByOptionalCriteria(eq("Franklin"), anyString(), anyString(), any(Pageable.class)))

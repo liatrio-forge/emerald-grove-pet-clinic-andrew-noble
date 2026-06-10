@@ -74,6 +74,30 @@ $ curl -s "http://localhost:8080/owners?telephone=abc" | grep -o "Telephone must
 Telephone must be a 10-digit number
 ```
 
+## Artifact: Page-bounds hardening (code-review follow-up)
+
+**What it proves:** A `page` value of 0 or negative is treated as the first page
+instead of throwing `IllegalArgumentException` (HTTP 500).
+
+**Why it matters:** A pre-existing edge case (carried over from the original
+`findPaginatedForOwnersLastName`) was caught during code review; `Math.max(page, 1)`
+now guards the `PageRequest`, consistent with the same fix applied in spec 04's
+`VetController`.
+
+**Command:**
+
+```bash
+./mvnw test -Dtest=OwnerControllerTests
+```
+
+**Result summary:** `testProcessFindFormPageBelowOneIsTreatedAsFirstPage` passes —
+`/owners?page=0` returns HTTP 200 with `currentPage=1`; all 19 tests green.
+
+```text
+[INFO] Tests run: 19, Failures: 0, Errors: 0, Skipped: 0 -- in ...owner.OwnerControllerTests
+[INFO] BUILD SUCCESS
+```
+
 ## Reviewer Conclusion
 
 The controller correctly filters by optional criteria, validates telephone before

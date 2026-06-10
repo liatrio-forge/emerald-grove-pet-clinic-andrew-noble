@@ -94,6 +94,8 @@ class OwnerController {
 	@GetMapping("/owners")
 	public String processFindForm(@RequestParam(defaultValue = "1") int page, Owner owner, BindingResult result,
 			Model model) {
+		// guard against page values below 1 (e.g. a hand-typed/crawled ?page=0)
+		int currentPage = Math.max(page, 1);
 		// allow parameterless GET request for /owners to return all records;
 		// blank criteria signify the broadest possible search for that field
 		String lastName = owner.getLastName() == null ? "" : owner.getLastName();
@@ -107,7 +109,7 @@ class OwnerController {
 		}
 
 		// find owners by the provided criteria (combined with AND)
-		Page<Owner> ownersResults = findPaginatedForOwnersCriteria(page, lastName, city, telephone);
+		Page<Owner> ownersResults = findPaginatedForOwnersCriteria(currentPage, lastName, city, telephone);
 		if (ownersResults.isEmpty()) {
 			// no owners found
 			result.rejectValue("lastName", "notFound", "not found");
@@ -121,7 +123,7 @@ class OwnerController {
 		}
 
 		// multiple owners found
-		return addPaginationModel(page, model, ownersResults);
+		return addPaginationModel(currentPage, model, ownersResults);
 	}
 
 	private String addPaginationModel(int page, Model model, Page<Owner> paginated) {
