@@ -33,6 +33,20 @@ export class OwnerPage extends BasePage {
     await this.page.getByRole('button', { name: /Find Owner/i }).click();
   }
 
+  async searchByTelephone(telephone: string): Promise<void> {
+    await this.page.locator('input#telephone').fill(telephone);
+    await this.page.getByRole('button', { name: /Find Owner/i }).click();
+  }
+
+  async searchByCity(city: string): Promise<void> {
+    await this.page.locator('input#city').fill(city);
+    await this.page.getByRole('button', { name: /Find Owner/i }).click();
+  }
+
+  telephoneError(): Locator {
+    return this.page.getByText(/Telephone must be a 10-digit number/i);
+  }
+
   async clickAddOwner(): Promise<void> {
     await this.page.getByRole('link', { name: /Add Owner/i }).click();
   }

@@ -94,6 +94,27 @@ class ClinicServiceTests {
 	}
 
 	@Test
+	void shouldFindOwnersByCityAndTelephone() {
+		// city starts-with filter (Madison has 4 seed owners)
+		Page<Owner> madison = this.owners.findByOptionalCriteria("", "Madison", "", pageable);
+		assertThat(madison).hasSize(4);
+
+		// telephone exact-match filter
+		Page<Owner> byPhone = this.owners.findByOptionalCriteria("", "", "6085551023", pageable);
+		assertThat(byPhone).hasSize(1);
+		assertThat(byPhone.iterator().next().getLastName()).isEqualTo("Franklin");
+
+		// combined AND filter (last name + city)
+		Page<Owner> combined = this.owners.findByOptionalCriteria("Franklin", "Madison", "", pageable);
+		assertThat(combined).hasSize(1);
+		assertThat(combined.iterator().next().getLastName()).isEqualTo("Franklin");
+
+		// blank criteria are ignored: all-blank returns every owner
+		Page<Owner> all = this.owners.findByOptionalCriteria("", "", "", pageable);
+		assertThat(all.getTotalElements()).isEqualTo(10);
+	}
+
+	@Test
 	void shouldFindSingleOwnerWithPet() {
 		Optional<Owner> optionalOwner = this.owners.findById(1);
 		assertThat(optionalOwner).isPresent();
