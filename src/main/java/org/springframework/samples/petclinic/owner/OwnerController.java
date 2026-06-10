@@ -15,6 +15,8 @@
  */
 package org.springframework.samples.petclinic.owner;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -123,16 +125,39 @@ class OwnerController {
 		}
 
 		// multiple owners found
-		return addPaginationModel(currentPage, model, ownersResults);
+		return addPaginationModel(currentPage, model, ownersResults, lastName, city, telephone);
 	}
 
-	private String addPaginationModel(int page, Model model, Page<Owner> paginated) {
+	private String addPaginationModel(int page, Model model, Page<Owner> paginated, String lastName, String city,
+			String telephone) {
 		List<Owner> listOwners = paginated.getContent();
 		model.addAttribute("currentPage", page);
 		model.addAttribute("totalPages", paginated.getTotalPages());
 		model.addAttribute("totalItems", paginated.getTotalElements());
 		model.addAttribute("listOwners", listOwners);
+		// expose the active search criteria as a query-string suffix so pagination
+		// links can preserve the current filter; empty criteria are omitted
+		model.addAttribute("filterParams", buildFilterParams(lastName, city, telephone));
 		return "owners/ownersList";
+	}
+
+	/**
+	 * Build a query-string suffix (e.g. {@code &lastName=Franklin&city=Madison}) for the
+	 * non-empty search criteria so pagination links keep the active filter. Empty values
+	 * are skipped to keep unfiltered URLs clean.
+	 */
+	private String buildFilterParams(String lastName, String city, String telephone) {
+		StringBuilder params = new StringBuilder();
+		appendFilterParam(params, "lastName", lastName);
+		appendFilterParam(params, "city", city);
+		appendFilterParam(params, "telephone", telephone);
+		return params.toString();
+	}
+
+	private void appendFilterParam(StringBuilder params, String name, String value) {
+		if (value != null && !value.isEmpty()) {
+			params.append('&').append(name).append('=').append(URLEncoder.encode(value, StandardCharsets.UTF_8));
+		}
 	}
 
 	private Page<Owner> findPaginatedForOwnersCriteria(int page, String lastName, String city, String telephone) {

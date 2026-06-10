@@ -29,7 +29,7 @@
 
 ## Tasks
 
-### [ ] 1.0 Owners list preserves search filters across pagination
+### [x] 1.0 Owners list preserves search filters across pagination
 
 #### 1.0 Proof Artifact(s)
 
@@ -45,25 +45,25 @@
 
 #### 1.0 Tasks
 
-- [ ] 1.1 (RED) Add a failing `OwnerControllerTests` test asserting that a
+- [x] 1.1 (RED) Add a failing `OwnerControllerTests` test asserting that a
   filtered multi-page search (e.g. `lastName=Franklin`) adds `lastName`, `city`,
   and `telephone` attributes to the model with the active values for the
   `owners/ownersList` view.
-- [ ] 1.2 (GREEN) Change `OwnerController.addPaginationModel` to accept the
+- [x] 1.2 (GREEN) Change `OwnerController.addPaginationModel` to accept the
   normalized `lastName`, `city`, and `telephone` values and add them to the
   model; update `processFindForm` to pass them. Confirm 1.1 passes.
-- [ ] 1.3 (RED) Add a failing `OwnerControllerTests` test asserting the rendered
+- [x] 1.3 (RED) Add a failing `OwnerControllerTests` test asserting the rendered
   `ownersList` HTML pagination links include the active filter parameter (e.g.
   the response body contains `lastName=Franklin`) on numbered/next/last links.
-- [ ] 1.4 (GREEN) Update `ownersList.html` pagination links to the parameterized
+- [x] 1.4 (GREEN) Update `ownersList.html` pagination links to the parameterized
   `@{/owners(page=..., lastName=..., city=..., telephone=...)}` form so active
   filters are carried. Confirm 1.3 passes.
-- [ ] 1.5 (RED) Add a failing `OwnerControllerTests` test asserting that an
+- [x] 1.5 (RED) Add a failing `OwnerControllerTests` test asserting that an
   unfiltered multi-page list renders clean `?page=N` links with no empty
   `lastName=`/`city=`/`telephone=` query parameters.
-- [ ] 1.6 (GREEN) Make the template omit blank filter parameters (conditional
+- [x] 1.6 (GREEN) Make the template omit blank filter parameters (conditional
   inclusion) so unfiltered URLs stay clean. Confirm 1.5 passes.
-- [ ] 1.7 (REFACTOR) Remove duplication in the template pagination links (e.g.
+- [x] 1.7 (REFACTOR) Remove duplication in the template pagination links (e.g.
   factor the shared param list) and tidy the controller signature; ensure all
   `OwnerControllerTests` still pass and existing tests are green.
 
