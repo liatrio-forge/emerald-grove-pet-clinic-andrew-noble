@@ -67,7 +67,7 @@
   factor the shared param list) and tidy the controller signature; ensure all
   `OwnerControllerTests` still pass and existing tests are green.
 
-### [ ] 2.0 Vets pagination specialty-filter regression coverage
+### [x] 2.0 Vets pagination specialty-filter regression coverage
 
 #### 2.0 Proof Artifact(s)
 
@@ -78,15 +78,15 @@
 
 #### 2.0 Tasks
 
-- [ ] 2.1 (RED) Add a failing `VetControllerTests` test that requests
+- [x] 2.1 (RED) Add a failing `VetControllerTests` test that requests
   `/vets.html` with a `specialty` filter producing multiple pages and asserts
   the rendered pagination links contain `specialty=<value>`.
-- [ ] 2.2 (RED/GREEN) Add a `VetControllerTests` test that requests a later page
+- [x] 2.2 (RED/GREEN) Add a `VetControllerTests` test that requests a later page
   (e.g. `page=2`) with a `specialty` parameter and asserts the model's
   `selectedSpecialty` and `listVets` reflect the specialty-filtered set. Confirm
   it passes against existing production code (regression); if a gap is found,
   implement the minimum fix in `VetController`/`vetList.html`.
-- [ ] 2.3 (REFACTOR) Ensure the new tests use shared fixtures/AAA structure and
+- [x] 2.3 (REFACTOR) Ensure the new tests use shared fixtures/AAA structure and
   all `VetControllerTests` pass.
 
 ### [ ] 3.0 End-to-end browser proof for filtered pagination
