@@ -89,7 +89,7 @@
 - [x] 2.3 (REFACTOR) Ensure the new tests use shared fixtures/AAA structure and
   all `VetControllerTests` pass.
 
-### [ ] 3.0 End-to-end browser proof for filtered pagination
+### [x] 3.0 End-to-end browser proof for filtered pagination
 
 #### 3.0 Proof Artifact(s)
 
@@ -104,18 +104,18 @@
 
 #### 3.0 Tasks
 
-- [ ] 3.1 Identify or seed enough owners with a shared filterable value (e.g. a
+- [x] 3.1 Identify or seed enough owners with a shared filterable value (e.g. a
   last name prefix or city) to produce >1 page of results (page size is 5);
   document the chosen filter and expected page count.
-- [ ] 3.2 Create `e2e-tests/tests/features/preserve-filters-pagination.spec.ts`
+- [x] 3.2 Create `e2e-tests/tests/features/preserve-filters-pagination.spec.ts`
   that: searches owners by the chosen filter, verifies multiple pages, clicks
   next/previous (and a numbered/last link), and asserts (a) the URL retains the
   filter parameter and (b) the listed rows remain within the filtered set.
-- [ ] 3.3 In the same spec, capture a proof screenshot of a later filtered page
+- [x] 3.3 In the same spec, capture a proof screenshot of a later filtered page
   into `docs/specs/06-spec-preserve-filters-pagination/06-proofs/img/`.
-- [ ] 3.4 Add a Vets check (extend `vet-specialty-filter.spec.ts` or add a case)
+- [x] 3.4 Add a Vets check (extend `vet-specialty-filter.spec.ts` or add a case)
   that selects a specialty, pages forward, and asserts the `specialty` parameter
   and filtered list persist; capture a screenshot if the specialty produces >1
   page, otherwise assert link parameters directly.
-- [ ] 3.5 Run the E2E suite (`cd e2e-tests && npm test`) and confirm the new
+- [x] 3.5 Run the E2E suite (`cd e2e-tests && npm test`) and confirm the new
   spec(s) pass; verify the screenshot artifacts exist under `06-proofs/img/`.
