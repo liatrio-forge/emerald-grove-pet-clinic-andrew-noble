@@ -20,6 +20,8 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 /**
  * Repository class for <code>Owner</code> domain objects. All method names are compliant
@@ -43,6 +45,26 @@ public interface OwnerRepository extends JpaRepository<Owner, Integer> {
 	 * found)
 	 */
 	Page<Owner> findByLastNameStartingWith(String lastName, Pageable pageable);
+
+	/**
+	 * Retrieve {@link Owner}s matching all provided (non-blank) criteria, combined with
+	 * AND: last name <i>starts-with</i>, city <i>starts-with</i>, and telephone
+	 * <i>exact</i> match. A blank ({@code ""}) value for any parameter disables filtering
+	 * on that field, so an all-blank call returns every owner.
+	 * @param lastName last-name prefix to match, or {@code ""} to ignore
+	 * @param city city prefix to match, or {@code ""} to ignore
+	 * @param telephone exact telephone to match, or {@code ""} to ignore
+	 * @param pageable paging/sorting information
+	 * @return a {@link Page} of matching {@link Owner}s
+	 */
+	@Query("""
+			SELECT o FROM Owner o
+			WHERE (:lastName = '' OR o.lastName LIKE CONCAT(:lastName, '%'))
+			AND (:city = '' OR o.city LIKE CONCAT(:city, '%'))
+			AND (:telephone = '' OR o.telephone = :telephone)
+			""")
+	Page<Owner> findByOptionalCriteria(@Param("lastName") String lastName, @Param("city") String city,
+			@Param("telephone") String telephone, Pageable pageable);
 
 	/**
 	 * Retrieve an {@link Owner} from the data store by id.
