@@ -121,7 +121,7 @@ input).
   the shared `inputField` fragment (no template change required, or adjust if
   needed).
 
-### [ ] 3.0 End-to-end browser proof (Playwright)
+### [x] 3.0 End-to-end browser proof (Playwright)
 
 Add a Playwright scenario to the existing `e2e-tests/` suite that creates an
 owner, attempts to create the same owner again, asserts a visible duplicate error
@@ -141,19 +141,19 @@ requirement.
 
 #### 3.0 Tasks
 
-- [ ] 3.1 (RED) Add a Playwright test (in `owner-management.spec.ts` or a new
+- [x] 3.1 (RED) Add a Playwright test (in `owner-management.spec.ts` or a new
   `duplicate-owner.spec.ts`) that uses `createOwner()` to build a unique owner,
   creates it successfully, then navigates back to the new-owner form and submits
   the identical data again. Assert a visible duplicate error (text from the
   `duplicate` message rendered on the `lastName` field). Run to confirm it fails
   against current behavior.
-- [ ] 3.2 (GREEN) With backend tasks 1.0/2.0 complete, run the spec and confirm
+- [x] 3.2 (GREEN) With backend tasks 1.0/2.0 complete, run the spec and confirm
   it passes; add a `page.screenshot` saving `duplicate-owner-error.png` to the
   test's `testInfo.outputPath`.
-- [ ] 3.3 Add an assertion guarding "no second record": after the duplicate
+- [x] 3.3 Add an assertion guarding "no second record": after the duplicate
   attempt, search owners by the unique last name and assert exactly one matching
   result (single-owner redirect to detail, not a multi-result list) — confirms no
   duplicate row was created.
-- [ ] 3.4 If a new error-reading helper is needed, add it to
+- [x] 3.4 If a new error-reading helper is needed, add it to
   `e2e-tests/tests/pages/owner-page.ts` following the existing page-object
   pattern; run the full owner E2E group to confirm no regressions.
