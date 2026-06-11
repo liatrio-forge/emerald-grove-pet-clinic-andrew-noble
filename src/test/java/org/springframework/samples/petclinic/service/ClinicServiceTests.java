@@ -115,6 +115,22 @@ class ClinicServiceTests {
 	}
 
 	@Test
+	void shouldDetectDuplicateOwnerIgnoringCaseAndWhitespace() {
+		// George Franklin / 6085551023 is seed owner #1; the lookup must match
+		// despite differing case and surrounding whitespace on every field.
+		boolean duplicate = this.owners.existsByNameAndTelephone("  george ", "FRANKLIN", " 6085551023 ");
+		assertThat(duplicate).isTrue();
+	}
+
+	@Test
+	void shouldNotDetectDuplicateForNonMatchingOwner() {
+		// A first/last/telephone combination that does not exist in the seed data
+		// must not be reported as a duplicate.
+		boolean duplicate = this.owners.existsByNameAndTelephone("Nonexistent", "Person", "0000000000");
+		assertThat(duplicate).isFalse();
+	}
+
+	@Test
 	void shouldFindSingleOwnerWithPet() {
 		Optional<Owner> optionalOwner = this.owners.findById(1);
 		assertThat(optionalOwner).isPresent();

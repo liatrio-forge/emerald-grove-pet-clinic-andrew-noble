@@ -35,7 +35,7 @@ a demoable, end-to-end-verifiable slice.
 
 ## Tasks
 
-### [ ] 1.0 Repository duplicate-lookup query (data layer)
+### [x] 1.0 Repository duplicate-lookup query (data layer)
 
 Add an `OwnerRepository` query that reports whether an owner already exists
 matching first name + last name + telephone, compared case-insensitively and
@@ -55,19 +55,19 @@ for the match rule and case/whitespace normalization.
 
 #### 1.0 Tasks
 
-- [ ] 1.1 (RED) In `ClinicServiceTests`, add a failing test (e.g.
+- [x] 1.1 (RED) In `ClinicServiceTests`, add a failing test (e.g.
   `shouldDetectDuplicateOwnerIgnoringCaseAndWhitespace`) that calls the new
   repository method with an existing owner's first/last/telephone using mixed
   case and surrounding spaces (use known seed data, e.g. George Franklin /
   `6085551023`) and asserts a duplicate is reported.
-- [ ] 1.2 (RED) Add a second failing test
+- [x] 1.2 (RED) Add a second failing test
   (`shouldNotDetectDuplicateForNonMatchingOwner`) asserting a non-matching
   first/last/telephone combination reports no duplicate.
-- [ ] 1.3 (GREEN) Add the lookup method to `OwnerRepository` using a `@Query`
+- [x] 1.3 (GREEN) Add the lookup method to `OwnerRepository` using a `@Query`
   with bound parameters and `LOWER(...)` on both sides plus trimmed inputs (e.g.
   `existsByFirstNameAndLastNameAndTelephoneIgnoreCase`-style via JPQL returning
   `boolean`/count). Verify behavior on H2.
-- [ ] 1.4 (GREEN/REFACTOR) Run `./mvnw test -Dtest=ClinicServiceTests`; confirm
+- [x] 1.4 (GREEN/REFACTOR) Run `./mvnw test -Dtest=ClinicServiceTests`; confirm
   green. Add a Javadoc comment consistent with the existing
   `findByOptionalCriteria` documentation style; re-run to confirm still green.
 
