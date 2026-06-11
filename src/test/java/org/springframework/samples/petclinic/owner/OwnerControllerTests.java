@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.aot.DisabledInAotMode;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -156,6 +157,46 @@ class OwnerControllerTests {
 		when(this.owners.findByOptionalCriteria(anyString(), anyString(), anyString(), any(Pageable.class)))
 			.thenReturn(tasks);
 		mockMvc.perform(get("/owners?page=1")).andExpect(status().isOk()).andExpect(view().name("owners/ownersList"));
+	}
+
+	@Test
+	void testProcessFindFormAddsActiveFilterAttributesToModel() throws Exception {
+		Page<Owner> multipleOwners = new PageImpl<>(List.of(george(), new Owner()));
+		when(this.owners.findByOptionalCriteria(anyString(), anyString(), anyString(), any(Pageable.class)))
+			.thenReturn(multipleOwners);
+		mockMvc
+			.perform(get("/owners?page=1").param("lastName", "Franklin")
+				.param("city", "Madison")
+				.param("telephone", "6085551023"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("owners/ownersList"))
+			.andExpect(model().attribute("filterParams", containsString("lastName=Franklin")))
+			.andExpect(model().attribute("filterParams", containsString("city=Madison")))
+			.andExpect(model().attribute("filterParams", containsString("telephone=6085551023")));
+	}
+
+	@Test
+	void testOwnersListPaginationLinksIncludeActiveFilter() throws Exception {
+		Page<Owner> multiPage = new PageImpl<>(List.of(george(), new Owner()), PageRequest.of(0, 5), 10);
+		when(this.owners.findByOptionalCriteria(anyString(), anyString(), anyString(), any(Pageable.class)))
+			.thenReturn(multiPage);
+		mockMvc.perform(get("/owners?page=1").param("lastName", "Franklin"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("owners/ownersList"))
+			.andExpect(content().string(containsString("lastName=Franklin")));
+	}
+
+	@Test
+	void testOwnersListPaginationLinksOmitEmptyFilters() throws Exception {
+		Page<Owner> multiPage = new PageImpl<>(List.of(george(), new Owner()), PageRequest.of(0, 5), 10);
+		when(this.owners.findByOptionalCriteria(anyString(), anyString(), anyString(), any(Pageable.class)))
+			.thenReturn(multiPage);
+		mockMvc.perform(get("/owners?page=1"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("owners/ownersList"))
+			.andExpect(content().string(not(containsString("lastName="))))
+			.andExpect(content().string(not(containsString("city="))))
+			.andExpect(content().string(not(containsString("telephone="))));
 	}
 
 	@Test

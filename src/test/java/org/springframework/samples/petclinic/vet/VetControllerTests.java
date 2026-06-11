@@ -176,6 +176,22 @@ class VetControllerTests {
 	}
 
 	@Test
+	void testPaginationLinksPreserveSpecialtyFilter() throws Exception {
+		// Eight vets all share the "surgery" specialty -> 2 pages at page size 5, so the
+		// pagination control renders and each link must keep the active specialty filter.
+		List<Vet> manySurgeons = new ArrayList<>();
+		for (int i = 1; i <= 8; i++) {
+			manySurgeons.add(vet(i, "Vet" + i, "Surgeon", "surgery"));
+		}
+		given(this.vets.findAll()).willReturn(manySurgeons);
+
+		mockMvc.perform(get("/vets.html?specialty=surgery&page=1"))
+			.andExpect(status().isOk())
+			.andExpect(model().attribute("totalPages", is(2)))
+			.andExpect(content().string(containsString("specialty=surgery")));
+	}
+
+	@Test
 	void testFilteredResultsPaginateAndPreserveFilterAcrossPages() throws Exception {
 		// Eight vets all share the "surgery" specialty -> 2 pages at page size 5.
 		List<Vet> manySurgeons = new ArrayList<>();
