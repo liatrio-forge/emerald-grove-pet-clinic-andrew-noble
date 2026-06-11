@@ -71,7 +71,7 @@ for the match rule and case/whitespace normalization.
   green. Add a Javadoc comment consistent with the existing
   `findByOptionalCriteria` documentation style; re-run to confirm still green.
 
-### [ ] 2.0 Controller duplicate-detection rule and UI error (web layer)
+### [x] 2.0 Controller duplicate-detection rule and UI error (web layer)
 
 Wire the repository lookup into `OwnerController.processCreationForm` so that,
 after standard `@Valid` validation passes, a detected duplicate rejects the
@@ -99,24 +99,24 @@ input).
 
 #### 2.0 Tasks
 
-- [ ] 2.1 (RED) In `OwnerControllerTests`, add a failing test
+- [x] 2.1 (RED) In `OwnerControllerTests`, add a failing test
   (`testProcessCreationFormRejectsDuplicate`) that stubs the new repository
   lookup to report a duplicate, posts a valid owner, and asserts `isOk()`, the
   `createOrUpdateOwnerForm` view, a field error with code `duplicate` on
   `lastName`, and `verify(owners, never()).save(any())`.
-- [ ] 2.2 (RED) Add/confirm a test that when the lookup reports no duplicate, a
+- [x] 2.2 (RED) Add/confirm a test that when the lookup reports no duplicate, a
   valid post still redirects (extend or assert alongside
   `testProcessCreationFormSuccess`); stub the lookup to return "not duplicate" in
   setup so existing success test stays green.
-- [ ] 2.3 (GREEN) In `processCreationForm`, after the `result.hasErrors()`
+- [x] 2.3 (GREEN) In `processCreationForm`, after the `result.hasErrors()`
   guard, call the repository lookup; on a duplicate, call
   `result.rejectValue("lastName", "duplicate")`, add the existing flash/error
   pattern if appropriate, and return `VIEWS_OWNER_CREATE_OR_UPDATE_FORM` without
   saving.
-- [ ] 2.4 (GREEN) Confirm `messages.properties` / `messages_en.properties`
+- [x] 2.4 (GREEN) Confirm `messages.properties` / `messages_en.properties`
   contain the `duplicate` key; run `./mvnw test -Dtest=I18nPropertiesSyncTest` to
   confirm bundle parity (add the key to any bundle missing it).
-- [ ] 2.5 (REFACTOR) Run `./mvnw test -Dtest=OwnerControllerTests` and confirm
+- [x] 2.5 (REFACTOR) Run `./mvnw test -Dtest=OwnerControllerTests` and confirm
   green; verify the creation form still renders the `lastName` field error via
   the shared `inputField` fragment (no template change required, or adjust if
   needed).

@@ -83,6 +83,14 @@ class OwnerController {
 			return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
 		}
 
+		// block creating an owner that duplicates an existing one on first name,
+		// last name, and telephone (matched case-insensitively and trimmed)
+		if (this.owners.existsByNameAndTelephone(owner.getFirstName(), owner.getLastName(), owner.getTelephone())) {
+			result.rejectValue("lastName", "duplicate", "is already in use");
+			redirectAttributes.addFlashAttribute("error", "An owner with the same name and telephone already exists.");
+			return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
+		}
+
 		this.owners.save(owner);
 		redirectAttributes.addFlashAttribute("message", "New Owner Created");
 		return "redirect:/owners/" + owner.getId();
