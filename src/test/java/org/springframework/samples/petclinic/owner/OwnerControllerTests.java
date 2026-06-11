@@ -125,6 +125,24 @@ class OwnerControllerTests {
 	}
 
 	@Test
+	void testProcessCreationFormRejectsDuplicate() throws Exception {
+		given(this.owners.existsByNameAndTelephone(anyString(), anyString(), anyString())).willReturn(true);
+
+		mockMvc
+			.perform(post("/owners/new").param("firstName", "George")
+				.param("lastName", "Franklin")
+				.param("address", "110 W. Liberty St.")
+				.param("city", "Madison")
+				.param("telephone", "6085551023"))
+			.andExpect(status().isOk())
+			.andExpect(model().attributeHasFieldErrors("owner", "lastName"))
+			.andExpect(model().attributeHasFieldErrorCode("owner", "lastName", "duplicate"))
+			.andExpect(view().name("owners/createOrUpdateOwnerForm"));
+
+		verify(this.owners, never()).save(any(Owner.class));
+	}
+
+	@Test
 	void testProcessCreationFormHasErrors() throws Exception {
 		mockMvc
 			.perform(post("/owners/new").param("firstName", "Joe").param("lastName", "Bloggs").param("city", "London"))

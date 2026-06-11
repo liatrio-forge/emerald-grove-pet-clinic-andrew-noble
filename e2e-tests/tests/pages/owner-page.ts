@@ -47,6 +47,10 @@ export class OwnerPage extends BasePage {
     return this.page.getByText(/Telephone must be a 10-digit number/i);
   }
 
+  duplicateError(): Locator {
+    return this.page.getByText(/is already in use/i);
+  }
+
   async clickAddOwner(): Promise<void> {
     await this.page.getByRole('link', { name: /Add Owner/i }).click();
   }

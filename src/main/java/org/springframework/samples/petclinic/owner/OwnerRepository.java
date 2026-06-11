@@ -67,6 +67,26 @@ public interface OwnerRepository extends JpaRepository<Owner, Integer> {
 			@Param("telephone") String telephone, Pageable pageable);
 
 	/**
+	 * Determine whether an {@link Owner} already exists matching the given first name,
+	 * last name, and telephone. Matching is case-insensitive and ignores leading and
+	 * trailing whitespace on all three fields, so {@code "  george "},
+	 * {@code "FRANKLIN"}, and {@code " 6085551023 "} match an existing "George Franklin /
+	 * 6085551023" owner. Used to prevent creating duplicate owners.
+	 * @param firstName the first name to match (compared trimmed, case-insensitively)
+	 * @param lastName the last name to match (compared trimmed, case-insensitively)
+	 * @param telephone the telephone to match (compared trimmed, case-insensitively)
+	 * @return {@code true} if a matching owner already exists, otherwise {@code false}
+	 */
+	@Query("""
+			SELECT COUNT(o) > 0 FROM Owner o
+			WHERE LOWER(TRIM(o.firstName)) = LOWER(TRIM(:firstName))
+			AND LOWER(TRIM(o.lastName)) = LOWER(TRIM(:lastName))
+			AND LOWER(TRIM(o.telephone)) = LOWER(TRIM(:telephone))
+			""")
+	boolean existsByNameAndTelephone(@Param("firstName") String firstName, @Param("lastName") String lastName,
+			@Param("telephone") String telephone);
+
+	/**
 	 * Retrieve an {@link Owner} from the data store by id.
 	 * <p>
 	 * This method returns an {@link Optional} containing the {@link Owner} if found. If
