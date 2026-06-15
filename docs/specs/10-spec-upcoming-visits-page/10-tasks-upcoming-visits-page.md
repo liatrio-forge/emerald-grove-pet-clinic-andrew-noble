@@ -151,7 +151,7 @@ shared layout menu so the page is reachable from the UI.
 - [x] 3.5 (REFACTOR) Verify the view references message keys (no hardcoded
   strings) and the menu link renders/active-highlights correctly.
 
-### [ ] 4.0 End-to-end proof (Playwright)
+### [x] 4.0 End-to-end proof (Playwright)
 
 Add a Playwright spec under `e2e-tests/` that creates a visit dated within the
 window, loads `/visits/upcoming`, and verifies the visit appears; capture the
@@ -168,14 +168,14 @@ rendered-URL proof artifact.
 
 #### 4.0 Tasks
 
-- [ ] 4.1 Add `upcoming-visits.spec.ts` under `e2e-tests/tests/features/`,
+- [x] 4.1 Add `upcoming-visits.spec.ts` under `e2e-tests/tests/features/`,
   reusing existing fixtures/page objects (`visit-page.ts`, `owner-page.ts`) to
   create a visit dated within the next 7 days for a seeded owner's pet.
-- [ ] 4.2 In the spec, navigate to `/visits/upcoming`, assert the page renders a
+- [x] 4.2 In the spec, navigate to `/visits/upcoming`, assert the page renders a
   list, and assert the created visit's owner, pet, date, and description appear
   in a row.
-- [ ] 4.3 Add an assertion (or a second test) that `?days=N` controls the window
+- [x] 4.3 Add an assertion (or a second test) that `?days=N` controls the window
   (e.g., a visit just outside the default 7-day window appears only when `days`
   is widened).
-- [ ] 4.4 Capture a screenshot of `/visits/upcoming` as the rendered-URL proof
+- [x] 4.4 Capture a screenshot of `/visits/upcoming` as the rendered-URL proof
   artifact and confirm `npm test -- --grep "Upcoming Visits"` passes.
