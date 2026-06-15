@@ -80,7 +80,7 @@ export; CSV formatting/header concerns are handled in 2.0.
   duplication, and confirm tasks 1.1–1.4 pass via
   `./mvnw test -Dtest=OwnerCsvExportControllerTests`.
 
-### [ ] 2.0 RFC 4180 CSV formatting, content type, and download headers
+### [x] 2.0 RFC 4180 CSV formatting, content type, and download headers
 
 Make the response a well-formed, safely-escaped CSV file: `Content-Type:
 text/csv`, `Content-Disposition: attachment; filename="owners.csv"`, a header row
@@ -102,22 +102,22 @@ embedded quotes), CRLF row terminators, and UTF-8 encoding.
 
 #### 2.0 Tasks
 
-- [ ] 2.1 (RED) Add a test asserting the response `Content-Type` is `text/csv`
+- [x] 2.1 (RED) Add a test asserting the response `Content-Type` is `text/csv`
   (e.g. `header().string("Content-Type", containsString("text/csv"))`) and that
   `Content-Disposition` equals `attachment; filename="owners.csv"`.
-- [ ] 2.2 (RED) Add a test asserting the first line of the body equals
+- [x] 2.2 (RED) Add a test asserting the first line of the body equals
   `firstName,lastName,address,city,telephone` (header row present, correct order).
-- [ ] 2.3 (RED) Add a test asserting a normal owner row renders fields in column
+- [x] 2.3 (RED) Add a test asserting a normal owner row renders fields in column
   order and that rows are terminated with CRLF (`\r\n`).
-- [ ] 2.4 (RED) Add an escaping test: an owner whose field contains a comma, a
+- [x] 2.4 (RED) Add an escaping test: an owner whose field contains a comma, a
   double quote, and/or a newline is wrapped in double quotes with embedded quotes
   doubled (e.g. `"Smith ""Jr"", III"`), per RFC 4180.
-- [ ] 2.5 (GREEN) Implement CSV serialization in the controller: emit the header
+- [x] 2.5 (GREEN) Implement CSV serialization in the controller: emit the header
   row, then one CRLF-terminated row per owner with values in the order
   `firstName,lastName,address,city,telephone`, applying RFC 4180 escaping (quote
   values containing `,` `"` CR or LF; double embedded quotes); set `Content-Type:
   text/csv` (UTF-8) and the `Content-Disposition` attachment header.
-- [ ] 2.6 (REFACTOR) Optionally extract the escaping/row-building logic into a small
+- [x] 2.6 (REFACTOR) Optionally extract the escaping/row-building logic into a small
   package-private helper for clarity; ensure no duplication, then confirm all 2.x
   tests pass via `./mvnw test -Dtest=OwnerCsvExportControllerTests`.
 

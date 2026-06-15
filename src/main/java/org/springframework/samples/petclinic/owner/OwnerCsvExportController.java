@@ -17,21 +17,30 @@ package org.springframework.samples.petclinic.owner;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * Exports owner search results as a CSV file. Reuses the same optional search criteria as
  * the HTML owners search ({@code lastName}, {@code city}, {@code telephone}, combined
  * with AND) and returns every matching owner (unpaged) as a downloadable {@code text/csv}
- * response.
+ * response. The CSV is RFC 4180 compliant: a header row, CRLF line terminators, and
+ * fields containing a comma, double quote, or line break are quoted with embedded quotes
+ * doubled.
  *
  * @author Andrew Noble
  */
 @Controller
 class OwnerCsvExportController {
+
+	private static final String HEADER_ROW = "firstName,lastName,address,city,telephone";
+
+	private static final String CRLF = "\r\n";
 
 	private final OwnerRepository owners;
 
@@ -40,25 +49,45 @@ class OwnerCsvExportController {
 	}
 
 	@GetMapping(path = "/owners.csv", produces = "text/csv")
-	@ResponseBody
-	String exportOwnersCsv(@RequestParam(defaultValue = "") String lastName,
+	ResponseEntity<String> exportOwnersCsv(@RequestParam(defaultValue = "") String lastName,
 			@RequestParam(defaultValue = "") String city, @RequestParam(defaultValue = "") String telephone) {
 		Page<Owner> matches = this.owners.findByOptionalCriteria(lastName, city, telephone, Pageable.unpaged());
 
-		StringBuilder csv = new StringBuilder("firstName,lastName,address,city,telephone");
+		StringBuilder csv = new StringBuilder(HEADER_ROW).append(CRLF);
 		for (Owner owner : matches) {
-			csv.append('\n')
-				.append(owner.getFirstName())
+			csv.append(escape(owner.getFirstName()))
 				.append(',')
-				.append(owner.getLastName())
+				.append(escape(owner.getLastName()))
 				.append(',')
-				.append(owner.getAddress())
+				.append(escape(owner.getAddress()))
 				.append(',')
-				.append(owner.getCity())
+				.append(escape(owner.getCity()))
 				.append(',')
-				.append(owner.getTelephone());
+				.append(escape(owner.getTelephone()))
+				.append(CRLF);
 		}
-		return csv.toString();
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.parseMediaType("text/csv"));
+		headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"owners.csv\"");
+		return new ResponseEntity<>(csv.toString(), headers, HttpStatus.OK);
+	}
+
+	/**
+	 * Escape a single CSV field per RFC 4180: if it contains a comma, double quote, CR,
+	 * or LF, wrap it in double quotes and double any embedded double quotes.
+	 * @param value the raw field value (may be {@code null})
+	 * @return the escaped field, ready to be written between commas
+	 */
+	private static String escape(String value) {
+		if (value == null) {
+			return "";
+		}
+		boolean mustQuote = value.contains(",") || value.contains("\"") || value.contains("\r") || value.contains("\n");
+		if (!mustQuote) {
+			return value;
+		}
+		return '"' + value.replace("\"", "\"\"") + '"';
 	}
 
 }

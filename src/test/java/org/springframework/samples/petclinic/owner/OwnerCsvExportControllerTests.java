@@ -31,12 +31,14 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -145,6 +147,51 @@ class OwnerCsvExportControllerTests {
 
 		String[] lines = body.split("\\r\\n|\\n");
 		assertThat(lines).containsExactly(HEADER_ROW);
+	}
+
+	// --- Task 2.0: content type, download headers, header row, escaping, CRLF ---
+
+	@Test
+	void exportSetsCsvContentTypeAndAttachmentDownloadHeader() throws Exception {
+		given(this.owners.findByOptionalCriteria(any(), any(), any(), any(Pageable.class)))
+			.willReturn(page(owner("George", "Franklin", "110 W. Liberty St.", "Madison", "6085551023")));
+
+		this.mockMvc.perform(get("/owners.csv"))
+			.andExpect(status().isOk())
+			.andExpect(content().contentTypeCompatibleWith("text/csv"))
+			.andExpect(header().string("Content-Disposition", "attachment; filename=\"owners.csv\""));
+	}
+
+	@Test
+	void exportFirstLineIsHeaderRowInColumnOrder() throws Exception {
+		given(this.owners.findByOptionalCriteria(any(), any(), any(), any(Pageable.class)))
+			.willReturn(page(owner("George", "Franklin", "110 W. Liberty St.", "Madison", "6085551023")));
+
+		String body = this.mockMvc.perform(get("/owners.csv")).andReturn().getResponse().getContentAsString();
+
+		assertThat(body).startsWith(HEADER_ROW + "\r\n");
+	}
+
+	@Test
+	void exportRendersFieldsInColumnOrderTerminatedByCrlf() throws Exception {
+		given(this.owners.findByOptionalCriteria(any(), any(), any(), any(Pageable.class)))
+			.willReturn(page(owner("George", "Franklin", "110 W. Liberty St.", "Madison", "6085551023")));
+
+		String body = this.mockMvc.perform(get("/owners.csv")).andReturn().getResponse().getContentAsString();
+
+		assertThat(body)
+			.isEqualTo(HEADER_ROW + "\r\n" + "George,Franklin,110 W. Liberty St.,Madison,6085551023" + "\r\n");
+	}
+
+	@Test
+	void exportEscapesFieldsContainingCommasQuotesAndNewlines() throws Exception {
+		given(this.owners.findByOptionalCriteria(any(), any(), any(), any(Pageable.class)))
+			.willReturn(page(owner("George", "Smith \"Jr\", III", "12 Main St.\nApt 4", "Madison", "6085551023")));
+
+		String body = this.mockMvc.perform(get("/owners.csv")).andReturn().getResponse().getContentAsString();
+
+		assertThat(body).contains("\"Smith \"\"Jr\"\", III\"");
+		assertThat(body).contains("\"12 Main St.\nApt 4\"");
 	}
 
 }
