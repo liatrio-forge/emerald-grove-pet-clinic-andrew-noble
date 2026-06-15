@@ -97,7 +97,8 @@ class VisitControllerTests {
 
 	@Test
 	void testProcessNewVisitFormPastDateRejected() throws Exception {
-		String pastDate = LocalDate.now().minusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE);
+		LocalDate pastLocalDate = LocalDate.now().minusDays(1);
+		String pastDate = pastLocalDate.format(DateTimeFormatter.ISO_LOCAL_DATE);
 		String description = "Annual checkup";
 
 		mockMvc
@@ -109,7 +110,7 @@ class VisitControllerTests {
 			.andExpect(model().attributeHasFieldErrors("visit", "date"))
 			// the re-rendered form preserves the values the user entered
 			.andExpect(model().attribute("visit", hasProperty("description", is(description))))
-			.andExpect(model().attribute("visit", hasProperty("date", is(LocalDate.now().minusDays(1)))));
+			.andExpect(model().attribute("visit", hasProperty("date", is(pastLocalDate))));
 	}
 
 }
