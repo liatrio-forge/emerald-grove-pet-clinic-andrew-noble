@@ -38,7 +38,7 @@ Task list derived from
 
 ## Tasks
 
-### [ ] 1.0 Upcoming-visits query and read-only view model (data access)
+### [x] 1.0 Upcoming-visits query and read-only view model (data access)
 
 Provide the data-access capability to fetch visits within an inclusive date
 window, joined to their pet and owner, exposed through a read-only view model.
@@ -58,21 +58,21 @@ exists, the query traverses the `Owner → Pet → visits` JPA associations.
 
 #### 1.0 Tasks
 
-- [ ] 1.1 (RED) Write `UpcomingVisitsRepositoryTests` asserting the query returns
+- [x] 1.1 (RED) Write `UpcomingVisitsRepositoryTests` asserting the query returns
   the expected visits for a known `[start, end]` window over seeded/inserted
   data, including owner name, pet name, date, and description on each result.
-- [ ] 1.2 (RED) Add test cases for: visits exactly on the start and end
+- [x] 1.2 (RED) Add test cases for: visits exactly on the start and end
   boundaries are included (inclusive); visits outside the window are excluded;
   an empty window returns an empty collection; results are ordered by date
   ascending (then owner last name, pet name for ties).
-- [ ] 1.3 (GREEN) Create the `UpcomingVisit` read-only view model with owner
+- [x] 1.3 (GREEN) Create the `UpcomingVisit` read-only view model with owner
   name, pet name, `LocalDate` date, and description (immutable; constructor or
   record-style getters consistent with the codebase).
-- [ ] 1.4 (GREEN) Create `VisitRepository` with a JPQL constructor-expression
+- [x] 1.4 (GREEN) Create `VisitRepository` with a JPQL constructor-expression
   query (`SELECT new ...UpcomingVisit(...) FROM Owner o JOIN o.pets p JOIN
   p.visits v WHERE v.date BETWEEN :start AND :end ORDER BY v.date, o.lastName,
   p.name`) returning `List<UpcomingVisit>`.
-- [ ] 1.5 (REFACTOR) Add Javadoc consistent with `OwnerRepository`, verify naming
+- [x] 1.5 (REFACTOR) Add Javadoc consistent with `OwnerRepository`, verify naming
   conventions, and confirm all tests in 1.1–1.2 pass via
   `./mvnw test -Dtest=UpcomingVisitsRepositoryTests`.
 
