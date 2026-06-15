@@ -119,7 +119,7 @@
 - [x] 2.5 (REFACTOR) Ensure the new test uses Arrange-Act-Assert, a descriptive
   name, and a date derived from `LocalDate.now()`.
 
-### [ ] 3.0 Prove the flow end-to-end and remove the past-date regression in existing e2e
+### [x] 3.0 Prove the flow end-to-end and remove the past-date regression in existing e2e
 
 #### 3.0 Proof Artifact(s)
 
@@ -134,12 +134,12 @@
 
 #### 3.0 Tasks
 
-- [ ] 3.1 (REGRESSION FIX) In `visit-scheduling.spec.ts`, replace the hard-coded
+- [x] 3.1 (REGRESSION FIX) In `visit-scheduling.spec.ts`, replace the hard-coded
   past dates (`2024-02-02` in the happy-path test and `2024-03-03` in the
   description-required test) with a computed non-past date (today or a near-future
   date derived from `new Date()`, formatted `yyyy-MM-dd`). Confirm both existing
   cases still pass under the new rule.
-- [ ] 3.2 (RED) Add a new test case in the `Visit Scheduling` describe block that
+- [x] 3.2 (RED) Add a new test case in the `Visit Scheduling` describe block that
   navigates to the new-visit form, fills `date` with a computed past date
   (e.g. yesterday), fills a description, submits, and asserts: the localized error
   text "must be today or a future date" is visible AND the page is still on the
@@ -149,14 +149,14 @@
   `npm test -- --grep "Visit Scheduling"` and confirm the new case FAILS before
   the backend change is present (or document that it is run against the built app
   with the feature).
-- [ ] 3.3 (GREEN) Run the e2e suite against the app with the feature implemented
+- [x] 3.3 (GREEN) Run the e2e suite against the app with the feature implemented
   (Playwright auto-starts the app via Maven per `docs/TESTING.md`); confirm the
   new past-date case passes.
-- [ ] 3.4 (ARTIFACT) Ensure the past-date test captures a screenshot to
+- [x] 3.4 (ARTIFACT) Ensure the past-date test captures a screenshot to
   `testInfo.outputPath(...)` (mirroring the existing happy-path screenshot) so a
   reviewable artifact lands under `e2e-tests/test-results/`. Use only synthetic
   data.
-- [ ] 3.5 (VERIFY) Run `cd e2e-tests && npm test -- --grep "Visit Scheduling"`;
+- [x] 3.5 (VERIFY) Run `cd e2e-tests && npm test -- --grep "Visit Scheduling"`;
   confirm all cases in the block PASS.
 
 ### [ ] 4.0 Final verification, coverage, and conventional commit
