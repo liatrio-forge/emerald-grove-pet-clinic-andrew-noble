@@ -53,3 +53,6 @@
    - Suggested remediation: When implementing 3.4, run the existing navigation
      E2E spec and the full Java suite; if a nav assertion counts menu items,
      update it deliberately as part of the change.
+   - Status: RESOLVED during implementation. `base-page-navigation.spec.ts`
+     passes unchanged, and the full Java suite passes (103 tests, 0 failures).
+     No menu-count assertion needed updating.
