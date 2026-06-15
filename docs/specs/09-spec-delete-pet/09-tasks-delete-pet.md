@@ -192,7 +192,7 @@ every locale bundle, preserving key parity.
   matching how existing keys are handled).
 - [x] 4.4 Run `./mvnw test -Dtest=I18nPropertiesSyncTest`; confirm green.
 
-### [ ] 5.0 End-to-end proof (Playwright) and full-suite regression
+### [x] 5.0 End-to-end proof (Playwright) and full-suite regression
 
 Add a Playwright spec that creates a pet, deletes it through the confirmation
 flow, and asserts the pet is gone from the owner details page; capture the
@@ -211,14 +211,14 @@ from the `orphanRemoval` change).
 
 #### 5.0 Tasks
 
-- [ ] 5.1 Add a `Pet Management` test that: opens an owner, adds a uniquely-named
+- [x] 5.1 Add a `Pet Management` test that: opens an owner, adds a uniquely-named
   pet, clicks its **Delete Pet** link, asserts the confirmation page is shown
   (screenshot here), clicks the confirm **Delete Pet** button, and asserts the pet
   name is no longer visible on the owner details page (and a success banner shows).
-- [ ] 5.2 (Optional) Add a delete helper/navigation to `pet-page.ts`/`owner-page.ts`
+- [x] 5.2 (Optional) Add a delete helper/navigation to `pet-page.ts`/`owner-page.ts`
   if it keeps the spec readable, following the existing page-object pattern.
-- [ ] 5.3 Run the E2E suite (`cd e2e-tests && npm test -- --grep "Pet Management"`)
+- [x] 5.3 Run the E2E suite (`cd e2e-tests && npm test -- --grep "Pet Management"`)
   and confirm pass; copy the confirmation screenshot into `09-proofs/img/` if not
   already captured in Task 3.
-- [ ] 5.4 Run the full Java suite `./mvnw test` and confirm BUILD SUCCESS (no
+- [x] 5.4 Run the full Java suite `./mvnw test` and confirm BUILD SUCCESS (no
   regressions from `orphanRemoval`); this is also the pre-commit gate.
