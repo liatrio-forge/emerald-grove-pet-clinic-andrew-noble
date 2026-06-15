@@ -76,7 +76,7 @@ exists, the query traverses the `Owner → Pet → visits` JPA associations.
   conventions, and confirm all tests in 1.1–1.2 pass via
   `./mvnw test -Dtest=UpcomingVisitsRepositoryTests`.
 
-### [ ] 2.0 Upcoming Visits page: controller and view with `days` handling
+### [x] 2.0 Upcoming Visits page: controller and view with `days` handling
 
 Render the read-only page at `GET /visits/upcoming`, wiring the query to a
 Thymeleaf view, defaulting `days` to 7, computing the inclusive today→today+days
@@ -97,24 +97,24 @@ showing an empty-state when no visits match.
 
 #### 2.0 Tasks
 
-- [ ] 2.1 (RED) Write `UpcomingVisitsControllerTests` with `@WebMvcTest` and a
+- [x] 2.1 (RED) Write `UpcomingVisitsControllerTests` with `@WebMvcTest` and a
   `@MockitoBean VisitRepository`, asserting `GET /visits/upcoming` returns 200,
   view name `visits/upcomingVisits`, and an `upcomingVisits` model attribute.
-- [ ] 2.2 (RED) Add cases asserting: default window uses 7 days when `days` is
+- [x] 2.2 (RED) Add cases asserting: default window uses 7 days when `days` is
   absent; a provided `days=30` widens the window (verify the `[start,end]`
   passed to the repository); invalid/non-positive/non-numeric `days` falls back
   to 7 without error; the `days` value is exposed to the model for display.
-- [ ] 2.3 (RED) Add a case asserting the empty-result path still returns 200 and
+- [x] 2.3 (RED) Add a case asserting the empty-result path still returns 200 and
   an empty `upcomingVisits` list (template renders empty-state).
-- [ ] 2.4 (GREEN) Implement `UpcomingVisitsController` with `GET /visits/upcoming`,
+- [x] 2.4 (GREEN) Implement `UpcomingVisitsController` with `GET /visits/upcoming`,
   an optional `days` request param (default 7), `LocalDate.now()`-based inclusive
   window, fallback coercion for invalid/non-positive values, and model
   population (`upcomingVisits`, `days`).
-- [ ] 2.5 (GREEN) Create `templates/visits/upcomingVisits.html` using the shared
+- [x] 2.5 (GREEN) Create `templates/visits/upcomingVisits.html` using the shared
   layout fragment and `liatrio-*` table/card styling, with columns Owner, Pet,
   Date, Description, a window-days heading label, and a localized empty-state
   block shown when the list is empty.
-- [ ] 2.6 (REFACTOR) Confirm graceful `days` coercion has no duplicated logic,
+- [x] 2.6 (REFACTOR) Confirm graceful `days` coercion has no duplicated logic,
   verify Thymeleaf output escaping, and run
   `./mvnw test -Dtest=UpcomingVisitsControllerTests`.
 
