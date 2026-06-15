@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+
+<html xmlns:th="https://www.thymeleaf.org" th:replace="~{fragments/layout :: layout (~{::body},'owners')}">
+
+<body>
+
+  <h2 th:text="#{deletePet}">Delete Pet</h2>
+
+  <p>
+    <strong th:text="#{confirmDeletePet}">Are you sure you want to delete this pet?</strong>
+  </p>
+
+  <table class="table table-striped liatrio-table" th:object="${pet}">
+    <tr>
+      <th th:text="#{name}">Name</th>
+      <td><b th:text="*{name}"></b></td>
+    </tr>
+  </table>
+
+  <div class="alert alert-warning" role="alert" id="delete-warning">
+    <span th:text="#{deletePetWarning}">This action cannot be undone.</span>
+    <span th:if="${visitCount > 0}" th:text="#{deletePetVisitsWarning(${visitCount})}"></span>
+  </div>
+
+  <form th:action="@{/owners/__${owner.id}__/pets/__${pet.id}__/delete}" method="post">
+    <button class="btn btn-danger" type="submit" th:text="#{deletePet}">Delete Pet</button>
+    <a class="btn btn-default" th:href="@{/owners/__${owner.id}__}" th:text="#{cancel}">Cancel</a>
+  </form>
+
+</body>
+
+</html>

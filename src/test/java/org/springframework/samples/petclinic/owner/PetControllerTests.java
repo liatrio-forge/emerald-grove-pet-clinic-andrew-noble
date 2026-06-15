@@ -20,6 +20,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledInNativeImage;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.ComponentScan;
@@ -32,9 +33,14 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.flash;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
@@ -206,6 +212,58 @@ class PetControllerTests {
 				.andExpect(view().name("pets/createOrUpdatePetForm"));
 		}
 
+	}
+
+	@Test
+	void testInitDeletePetForm() throws Exception {
+		mockMvc.perform(get("/owners/{ownerId}/pets/{petId}/delete", TEST_OWNER_ID, TEST_PET_ID))
+			.andExpect(status().isOk())
+			.andExpect(view().name("pets/confirmDeletePet"))
+			.andExpect(model().attributeExists("pet"))
+			.andExpect(model().attributeExists("visitCount"));
+	}
+
+	@Test
+	void testProcessDeletePetSuccess() throws Exception {
+		mockMvc.perform(post("/owners/{ownerId}/pets/{petId}/delete", TEST_OWNER_ID, TEST_PET_ID))
+			.andExpect(status().is3xxRedirection())
+			.andExpect(view().name("redirect:/owners/{ownerId}"))
+			.andExpect(flash().attributeExists("message"));
+
+		ArgumentCaptor<Owner> captor = ArgumentCaptor.forClass(Owner.class);
+		verify(this.owners).save(captor.capture());
+		assertThat(captor.getValue().getPet(TEST_PET_ID)).isNull();
+	}
+
+	@Test
+	void testProcessDeletePetWithVisits() throws Exception {
+		Owner owner = new Owner();
+		Pet pet = new Pet();
+		owner.addPet(pet);
+		pet.setId(TEST_PET_ID);
+		pet.setName("petty");
+		Visit visit = new Visit();
+		visit.setDescription("checkup");
+		pet.addVisit(visit);
+		given(this.owners.findById(TEST_OWNER_ID)).willReturn(Optional.of(owner));
+
+		mockMvc.perform(post("/owners/{ownerId}/pets/{petId}/delete", TEST_OWNER_ID, TEST_PET_ID))
+			.andExpect(status().is3xxRedirection())
+			.andExpect(view().name("redirect:/owners/{ownerId}"))
+			.andExpect(flash().attributeExists("message"));
+
+		verify(this.owners).save(any(Owner.class));
+	}
+
+	@Test
+	void testProcessDeleteUnknownPet() throws Exception {
+		int unknownPetId = 999;
+		mockMvc.perform(post("/owners/{ownerId}/pets/{petId}/delete", TEST_OWNER_ID, unknownPetId))
+			.andExpect(status().is3xxRedirection())
+			.andExpect(view().name("redirect:/owners/{ownerId}"))
+			.andExpect(flash().attributeExists("error"));
+
+		verify(this.owners, never()).save(any(Owner.class));
 	}
 
 }

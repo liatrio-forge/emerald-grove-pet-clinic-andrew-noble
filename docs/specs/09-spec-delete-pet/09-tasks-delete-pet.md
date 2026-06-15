@@ -82,7 +82,7 @@ and `@DataJpaTest` integration tests proving the data is gone with no orphans.
 - [x] 1.6 Run `./mvnw test -Dtest=ClinicServiceTests,OwnerTests`; refactor for
   clarity while keeping green.
 
-### [ ] 2.0 Controller: confirmed delete flow (GET confirm + POST delete)
+### [x] 2.0 Controller: confirmed delete flow (GET confirm + POST delete)
 
 Add `GET /owners/{ownerId}/pets/{petId}/delete` (renders confirmation view with
 pet + visit count) and `POST /owners/{ownerId}/pets/{petId}/delete` (removes the
@@ -105,29 +105,29 @@ pet, saves the owner, flashes a success message, redirects). Handle the unknown
 
 #### 2.0 Tasks
 
-- [ ] 2.1 (RED) Add `testInitDeletePetForm`: `GET .../pets/{petId}/delete` →
+- [x] 2.1 (RED) Add `testInitDeletePetForm`: `GET .../pets/{petId}/delete` →
   `status().isOk()`, `view().name("pets/confirmDeletePet")`,
   `model().attributeExists("pet")`. Confirm it fails (404/no handler).
-- [ ] 2.2 (RED) Add `testProcessDeletePetSuccess`: `POST .../pets/{petId}/delete`
+- [x] 2.2 (RED) Add `testProcessDeletePetSuccess`: `POST .../pets/{petId}/delete`
   → `status().is3xxRedirection()`, `view().name("redirect:/owners/{ownerId}")`,
   `flash().attributeExists("message")`; verify `owners.save(owner)` is called with
   the pet removed (use a captured/`given` owner with two pets). Confirm it fails.
-- [ ] 2.3 (RED) Add `testProcessDeletePetWithVisits`: same as success but the
+- [x] 2.3 (RED) Add `testProcessDeletePetWithVisits`: same as success but the
   target pet has a visit in the mock owner; assert redirect + success message
   (cascade is exercised at the JPA layer, here we assert the flow still succeeds).
-- [ ] 2.4 (RED) Add `testProcessDeleteUnknownPet`: `POST` with a `petId` not on the
+- [x] 2.4 (RED) Add `testProcessDeleteUnknownPet`: `POST` with a `petId` not on the
   owner → redirect to owner page, `flash().attributeExists("error")`, and verify
   `owners.save(...)` is NOT called for a removal. Confirm it fails.
-- [ ] 2.5 (GREEN) Add `@GetMapping("/pets/{petId}/delete")` returning
+- [x] 2.5 (GREEN) Add `@GetMapping("/pets/{petId}/delete")` returning
   `pets/confirmDeletePet`, exposing the pet and a `visitCount` model attribute
   (e.g. `pet.getVisits().size()`).
-- [ ] 2.6 (GREEN) Add `@PostMapping("/pets/{petId}/delete")`: look up the pet via
+- [x] 2.6 (GREEN) Add `@PostMapping("/pets/{petId}/delete")`: look up the pet via
   `owner.getPet(petId)`; if null, add `error` flash and redirect; otherwise
   `owner.removePet(pet)`, `owners.save(owner)`, add success `message` flash, and
   redirect to `/owners/{ownerId}`.
-- [ ] 2.7 Run `./mvnw test -Dtest=PetControllerTests`; refactor while green.
+- [x] 2.7 Run `./mvnw test -Dtest=PetControllerTests`; refactor while green.
 
-### [ ] 3.0 UI: Delete action and confirmation page
+### [x] 3.0 UI: Delete action and confirmation page
 
 Add a **Delete Pet** link per pet on the owner details page and create the
 `pets/confirmDeletePet.html` confirmation page with a danger-styled Delete
@@ -146,7 +146,7 @@ exist.
 
 #### 3.0 Tasks
 
-- [ ] 3.1 Create `templates/pets/confirmDeletePet.html` using the
+- [x] 3.1 Create `templates/pets/confirmDeletePet.html` using the
   `fragments/layout` layout: a heading and confirmation question
   (`th:text="#{confirmDeletePet}"`), the "cannot be undone" warning
   (`#{deletePetWarning}`), a `th:if`-guarded visit-count warning
@@ -154,16 +154,16 @@ exist.
   `POST` form to `.../pets/{petId}/delete` with a `btn btn-danger` submit
   (`#{deletePet}`), and a `btn`/link Cancel (`#{cancel}`) back to
   `/owners/{ownerId}`.
-- [ ] 3.2 Edit `owners/ownerDetails.html`: add a **Delete Pet** link
+- [x] 3.2 Edit `owners/ownerDetails.html`: add a **Delete Pet** link
   (`th:text="#{deletePet}"`) in the existing per-pet action row (next to Edit Pet /
   Add Visit), linking to `@{__${owner.id}__/pets/__${pet.id}__/delete}`.
-- [ ] 3.3 Run the app (`./mvnw spring-boot:run`) or the Playwright run (Task 5) and
+- [x] 3.3 Run the app (`./mvnw spring-boot:run`) or the Playwright run (Task 5) and
   capture a screenshot of the confirmation page into
   `docs/specs/09-spec-delete-pet/09-proofs/img/`.
-- [ ] 3.4 Confirm no hard-coded HTML strings were introduced (run
+- [x] 3.4 Confirm no hard-coded HTML strings were introduced (run
   `./mvnw test -Dtest=I18nPropertiesSyncTest` — covered fully in Task 4).
 
-### [ ] 4.0 Internationalization: add and sync message keys
+### [x] 4.0 Internationalization: add and sync message keys
 
 Add the new user-facing message keys to the default `messages.properties` and
 every locale bundle, preserving key parity.
@@ -178,19 +178,19 @@ every locale bundle, preserving key parity.
 
 #### 4.0 Tasks
 
-- [ ] 4.1 (RED) After adding the template/link (Task 3), run
+- [x] 4.1 (RED) After adding the template/link (Task 3), run
   `./mvnw test -Dtest=I18nPropertiesSyncTest` and confirm it fails for missing
   keys (or that the keys are absent), establishing the gap.
-- [ ] 4.2 (GREEN) Add the new keys to the default `messages.properties` with
+- [x] 4.2 (GREEN) Add the new keys to the default `messages.properties` with
   English text: `deletePet=Delete Pet`, `confirmDeletePet=Are you sure you want to
   delete this pet?`, `deletePetWarning=This action cannot be undone.`,
   `deletePetVisitsWarning=This will also permanently delete {0} visit(s).`,
   `cancel=Cancel`.
-- [ ] 4.3 (GREEN) Add the same keys to all locale bundles
+- [x] 4.3 (GREEN) Add the same keys to all locale bundles
   (`messages_en, _de, _es, _fa, _ko, _pt, _ru, _tr`) with appropriate
   translations (English fallback acceptable where a translation is unavailable,
   matching how existing keys are handled).
-- [ ] 4.4 Run `./mvnw test -Dtest=I18nPropertiesSyncTest`; confirm green.
+- [x] 4.4 Run `./mvnw test -Dtest=I18nPropertiesSyncTest`; confirm green.
 
 ### [ ] 5.0 End-to-end proof (Playwright) and full-suite regression
 
