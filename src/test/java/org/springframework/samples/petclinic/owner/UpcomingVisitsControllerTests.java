@@ -69,13 +69,17 @@ class UpcomingVisitsControllerTests {
 
 	@Test
 	void shouldDefaultToSevenDayWindowWhenDaysAbsent() throws Exception {
+		// Capture the date range around the request so a midnight rollover between the
+		// controller's LocalDate.now() and the assertion cannot make this test flaky.
+		LocalDate before = LocalDate.now();
 		this.mockMvc.perform(get("/visits/upcoming")).andExpect(status().isOk());
+		LocalDate after = LocalDate.now();
 
 		ArgumentCaptor<LocalDate> startCaptor = ArgumentCaptor.forClass(LocalDate.class);
 		ArgumentCaptor<LocalDate> endCaptor = ArgumentCaptor.forClass(LocalDate.class);
 		verify(this.visits).findUpcomingVisits(startCaptor.capture(), endCaptor.capture());
 		assertThat(ChronoUnit.DAYS.between(startCaptor.getValue(), endCaptor.getValue())).isEqualTo(7);
-		assertThat(startCaptor.getValue()).isEqualTo(LocalDate.now());
+		assertThat(startCaptor.getValue()).isBetween(before, after);
 	}
 
 	@Test
