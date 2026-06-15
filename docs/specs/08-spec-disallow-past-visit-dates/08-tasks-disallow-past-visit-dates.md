@@ -159,7 +159,7 @@
 - [x] 3.5 (VERIFY) Run `cd e2e-tests && npm test -- --grep "Visit Scheduling"`;
   confirm all cases in the block PASS.
 
-### [ ] 4.0 Final verification, coverage, and conventional commit
+### [x] 4.0 Final verification, coverage, and conventional commit
 
 #### 4.0 Proof Artifact(s)
 
@@ -173,15 +173,15 @@
 
 #### 4.0 Tasks
 
-- [ ] 4.1 Run the full Java suite: `./mvnw test`; confirm green (this is also the
+- [x] 4.1 Run the full Java suite: `./mvnw test`; confirm green (this is also the
   pre-commit `maven-test-check` gate).
-- [ ] 4.2 Generate the coverage report: `./mvnw clean test jacoco:report` and open
+- [x] 4.2 Generate the coverage report: `./mvnw clean test jacoco:report` and open
   `target/site/jacoco/index.html`; confirm the changed `Visit` code and the
   past-date rejection path are covered, meeting >90% line coverage for new code.
-- [ ] 4.3 Confirm work is on a dedicated feature branch (e.g.
+- [x] 4.3 Confirm work is on a dedicated feature branch (e.g.
   `feat/disallow-past-visit-dates`), not `main`; create one if needed.
-- [ ] 4.4 Stage changes and commit with a conventional message (e.g.
+- [x] 4.4 Stage changes and commit with a conventional message (e.g.
   `feat: reject past visit dates with validation message`); let the pre-commit
   hooks (markdownlint, Maven-test-check, branch guard) run and pass.
-- [ ] 4.5 Verify `git log --oneline -1` shows the commit on the feature branch and
+- [x] 4.5 Verify `git log --oneline -1` shows the commit on the feature branch and
   the working tree is clean.
