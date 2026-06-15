@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase.Replace;
+import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.samples.petclinic.owner.Owner;
@@ -81,6 +82,9 @@ class ClinicServiceTests {
 
 	@Autowired
 	protected VetRepository vets;
+
+	@Autowired
+	private TestEntityManager entityManager;
 
 	private final Pageable pageable = Pageable.unpaged();
 
@@ -283,6 +287,43 @@ class ClinicServiceTests {
 			.element(0)
 			.extracting(Visit::getDate)
 			.isNotNull();
+	}
+
+	@Test
+	@Transactional
+	void shouldDeletePetAndCascadeItsVisitsWhenRemovedFromOwner() {
+		Optional<Owner> optionalOwner = this.owners.findById(6);
+		assertThat(optionalOwner).isPresent();
+		Owner owner6 = optionalOwner.get();
+
+		// Pet 7 has visits in the sample data; capture the starting state.
+		Pet pet7 = owner6.getPet(7);
+		assertThat(pet7).isNotNull();
+		assertThat(pet7.getVisits()).isNotEmpty();
+		int petsBefore = owner6.getPets().size();
+		Number visitsBefore = (Number) this.entityManager.getEntityManager()
+			.createNativeQuery("SELECT COUNT(*) FROM visits WHERE pet_id = 7")
+			.getSingleResult();
+		assertThat(visitsBefore.intValue()).isPositive();
+
+		// Remove the pet through the aggregate and persist.
+		owner6.removePet(pet7);
+		this.owners.save(owner6);
+		this.entityManager.flush();
+		this.entityManager.clear();
+
+		// The pet is gone from the owner...
+		optionalOwner = this.owners.findById(6);
+		assertThat(optionalOwner).isPresent();
+		owner6 = optionalOwner.get();
+		assertThat(owner6.getPets()).hasSize(petsBefore - 1);
+		assertThat(owner6.getPet(7)).isNull();
+
+		// ...and its visit rows were cascade-deleted (no orphans left).
+		Number visitsAfter = (Number) this.entityManager.getEntityManager()
+			.createNativeQuery("SELECT COUNT(*) FROM visits WHERE pet_id = 7")
+			.getSingleResult();
+		assertThat(visitsAfter.intValue()).isZero();
 	}
 
 }

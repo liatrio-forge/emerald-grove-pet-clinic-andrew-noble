@@ -43,7 +43,7 @@ the `feat/delete-pet` branch.
 
 ## Tasks
 
-### [ ] 1.0 Domain + persistence: remove a pet and cascade-delete its visits
+### [x] 1.0 Domain + persistence: remove a pet and cascade-delete its visits
 
 Add the `Owner.removePet` aggregate method and enable orphan removal on the
 owner→pets mapping so that removing a pet from its owner and saving deletes the
@@ -63,23 +63,23 @@ and `@DataJpaTest` integration tests proving the data is gone with no orphans.
 
 #### 1.0 Tasks
 
-- [ ] 1.1 (RED) Add `OwnerTests` (or a test in the owner package) asserting that
+- [x] 1.1 (RED) Add `OwnerTests` (or a test in the owner package) asserting that
   after `owner.removePet(pet)`, `owner.getPets()` no longer contains `pet` but
   still contains the other pet(s). Run and confirm it fails to compile/pass.
-- [ ] 1.2 (RED) Add a `@DataJpaTest` test in `ClinicServiceTests`
+- [x] 1.2 (RED) Add a `@DataJpaTest` test in `ClinicServiceTests`
   (`@Transactional`) that loads a sample owner whose pet has visits (e.g. owner 6,
   pet 7 in the sample data), asserts the pet currently has ≥1 visit, removes the
   pet via `owner.removePet(...)`, saves, reloads the owner, and asserts the pet is
   absent. Confirm it fails.
-- [ ] 1.3 (GREEN) Add `public void removePet(Pet pet)` to `Owner` that removes the
+- [x] 1.3 (GREEN) Add `public void removePet(Pet pet)` to `Owner` that removes the
   pet from the internal `pets` list.
-- [ ] 1.4 (GREEN) Add `orphanRemoval = true` to the `@OneToMany` `pets` mapping on
+- [x] 1.4 (GREEN) Add `orphanRemoval = true` to the `@OneToMany` `pets` mapping on
   `Owner` so the removed pet row is deleted on save; rely on the existing
   `Pet.visits` `CascadeType.ALL` to delete its visit rows.
-- [ ] 1.5 (VERIFY) If feasible, assert at the DB level that no orphaned visit rows
+- [x] 1.5 (VERIFY) If feasible, assert at the DB level that no orphaned visit rows
   remain (e.g. via repository/`EntityManager` count) so the cascade is proven, not
   just the in-memory collection.
-- [ ] 1.6 Run `./mvnw test -Dtest=ClinicServiceTests,OwnerTests`; refactor for
+- [x] 1.6 Run `./mvnw test -Dtest=ClinicServiceTests,OwnerTests`; refactor for
   clarity while keeping green.
 
 ### [ ] 2.0 Controller: confirmed delete flow (GET confirm + POST delete)

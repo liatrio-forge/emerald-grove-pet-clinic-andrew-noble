@@ -61,7 +61,7 @@ public class Owner extends Person {
 	@Pattern(regexp = "\\d{10}", message = "{telephone.invalid}")
 	private String telephone;
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
 	@JoinColumn(name = "owner_id")
 	@OrderBy("name")
 	private final List<Pet> pets = new ArrayList<>();
@@ -98,6 +98,15 @@ public class Owner extends Person {
 		if (pet.isNew()) {
 			getPets().add(pet);
 		}
+	}
+
+	/**
+	 * Remove the given {@link Pet} from this owner. When the owner is persisted, the
+	 * orphaned pet (and, via cascade, its visits) is deleted.
+	 * @param pet the pet to remove
+	 */
+	public void removePet(Pet pet) {
+		getPets().remove(pet);
 	}
 
 	/**
