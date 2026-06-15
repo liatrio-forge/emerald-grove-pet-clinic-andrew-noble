@@ -118,7 +118,7 @@ showing an empty-state when no visits match.
   verify Thymeleaf output escaping, and run
   `./mvnw test -Dtest=UpcomingVisitsControllerTests`.
 
-### [ ] 3.0 Internationalization and navigation discoverability
+### [x] 3.0 Internationalization and navigation discoverability
 
 Add all user-facing strings as i18n keys across every `messages*.properties`
 locale (so `I18nPropertiesSyncTest` passes) and add a navigation link to the
@@ -135,20 +135,20 @@ shared layout menu so the page is reachable from the UI.
 
 #### 3.0 Tasks
 
-- [ ] 3.1 (RED) Run `./mvnw test -Dtest=I18nPropertiesSyncTest` after adding keys
+- [x] 3.1 (RED) Run `./mvnw test -Dtest=I18nPropertiesSyncTest` after adding keys
   only to the base file to confirm it fails on missing-locale parity (proves the
   guard works), or assert the new keys resolve in a controller/view test.
-- [ ] 3.2 (GREEN) Add new keys (e.g., `upcomingVisits`, `upcomingVisits.subtitle`,
+- [x] 3.2 (GREEN) Add new keys (e.g., `upcomingVisits`, `upcomingVisits.subtitle`,
   `upcomingVisits.days`, `upcomingVisits.none`, plus reused `date`/`description`
   if not present) to `messages.properties`.
-- [ ] 3.3 (GREEN) Add the same keys to every locale file (`messages_de`, `_es`,
+- [x] 3.3 (GREEN) Add the same keys to every locale file (`messages_de`, `_es`,
   `_fa`, `_ko`, `_pt`, `_ru`, `_tr`) with appropriate translations (or English
   fallback where translation is unavailable), then confirm
   `I18nPropertiesSyncTest` passes.
-- [ ] 3.4 (GREEN) Add a `menuItem` navigation entry in `fragments/layout.html`
+- [x] 3.4 (GREEN) Add a `menuItem` navigation entry in `fragments/layout.html`
   linking to `/visits/upcoming` with an appropriate Font Awesome glyph and the
   `upcomingVisits` label, marking the active menu key.
-- [ ] 3.5 (REFACTOR) Verify the view references message keys (no hardcoded
+- [x] 3.5 (REFACTOR) Verify the view references message keys (no hardcoded
   strings) and the menu link renders/active-highlights correctly.
 
 ### [ ] 4.0 End-to-end proof (Playwright)

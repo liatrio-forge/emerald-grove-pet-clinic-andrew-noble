@@ -59,6 +59,11 @@
             <span th:text="#{vets}">Veterinarians</span>
           </li>
 
+          <li th:replace="~{::menuItem ('/visits/upcoming','upcomingVisits','upcoming visits','calendar',#{upcomingVisits})}">
+            <span class="fa fa-calendar" aria-hidden="true"></span>
+            <span th:text="#{upcomingVisits}">Upcoming Visits</span>
+          </li>
+
           <li
             th:replace="~{::menuItem ('/oups','error','trigger a RuntimeException to see how it is handled','exclamation-triangle',#{error})}">
             <span class="fa exclamation-triangle" aria-hidden="true"></span>
