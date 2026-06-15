@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+
+<html xmlns:th="https://www.thymeleaf.org"
+  th:replace="~{fragments/layout :: layout (~{::body},'upcomingVisits')}">
+
+<body>
+
+  <section class="liatrio-section">
+    <div class="liatrio-table-card">
+      <div class="liatrio-card-header">
+        <h2 th:text="#{upcomingVisits}">Upcoming Visits</h2>
+        <p class="liatrio-muted" th:text="#{upcomingVisits.subtitle(${days})}">Visits scheduled within the next 7 days.</p>
+      </div>
+
+      <table th:if="${!upcomingVisits.empty}" id="upcomingVisits" class="table table-striped liatrio-table">
+        <thead>
+          <tr>
+            <th th:text="#{owner}">Owner</th>
+            <th th:text="#{pet}">Pet</th>
+            <th th:text="#{date}">Date</th>
+            <th th:text="#{description}">Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="visit : ${upcomingVisits}">
+            <td>
+              <a th:href="@{/owners/{id}(id=${visit.ownerId})}" th:text="${visit.ownerName}">owner name</a>
+            </td>
+            <td th:text="${visit.petName}">pet name</td>
+            <td th:text="${#temporals.format(visit.date, 'yyyy-MM-dd')}">date</td>
+            <td th:text="${visit.description}">description</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p th:if="${upcomingVisits.empty}" class="liatrio-muted" th:text="#{upcomingVisits.none}">There are no upcoming visits in this window.</p>
+    </div>
+  </section>
+
+</body>
+
+</html>
