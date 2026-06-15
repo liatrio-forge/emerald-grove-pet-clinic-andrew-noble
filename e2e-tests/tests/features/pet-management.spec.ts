@@ -46,6 +46,48 @@ test.describe('Pet Management', () => {
     await page.screenshot({ path: testInfo.outputPath('pet-details-with-visit-history.png'), fullPage: true });
   });
 
+  test('can delete a pet from an owner after confirming', async ({ page }, testInfo) => {
+    const ownerPage = new OwnerPage(page);
+    const pet = createPet({ type: 'dog' });
+
+    // Arrange: add a uniquely-named pet to an existing owner.
+    await ownerPage.openFindOwners();
+    await ownerPage.searchByLastName('Davis');
+    await ownerPage.openOwnerDetailsByName('Betty Davis');
+
+    await page.getByRole('link', { name: /Add New Pet/i }).click();
+    await page.locator('input#name').fill(pet.name);
+    await page.locator('input#birthDate').fill(pet.birthDate);
+    await page.locator('select#type').selectOption({ label: pet.type });
+    await page.getByRole('button', { name: /Add Pet/i }).click();
+
+    await expect(page.getByRole('heading', { name: /Pets and Visits/i })).toBeVisible();
+    await expect(page.getByText(pet.name, { exact: true })).toBeVisible();
+
+    // Act: open the confirmation page for that pet.
+    const petRow = page.locator('tr').filter({
+      has: page.locator('dd', { hasText: pet.name })
+    });
+    await petRow.getByRole('link', { name: /Delete Pet/i }).first().click();
+
+    // Assert: the confirmation step is shown (no deletion yet). Capture the proof screenshot.
+    await expect(page.getByRole('heading', { name: /Delete Pet/i })).toBeVisible();
+    await expect(page.getByText(/cannot be undone/i)).toBeVisible();
+    await page.screenshot({
+      path: '../docs/specs/09-spec-delete-pet/09-proofs/img/confirm-delete-pet.png',
+      fullPage: true
+    });
+    await page.screenshot({ path: testInfo.outputPath('confirm-delete-pet.png'), fullPage: true });
+
+    // Confirm the deletion.
+    await page.getByRole('button', { name: /Delete Pet/i }).click();
+
+    // Assert: back on owner details and the pet is gone.
+    await expect(page.getByRole('heading', { name: /Pets and Visits/i })).toBeVisible();
+    await expect(page.getByText(pet.name, { exact: true })).toHaveCount(0);
+    await page.screenshot({ path: testInfo.outputPath('owner-after-delete.png'), fullPage: true });
+  });
+
   test('validates pet type selection and birth date format', async ({ page }) => {
     const ownerPage = new OwnerPage(page);
 

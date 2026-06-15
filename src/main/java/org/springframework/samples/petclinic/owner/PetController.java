@@ -49,6 +49,8 @@ class PetController {
 
 	private static final String VIEWS_PETS_CREATE_OR_UPDATE_FORM = "pets/createOrUpdatePetForm";
 
+	private static final String VIEWS_PETS_CONFIRM_DELETE = "pets/confirmDeletePet";
+
 	private final OwnerRepository owners;
 
 	private final PetTypeRepository types;
@@ -176,6 +178,29 @@ class PetController {
 			owner.addPet(pet);
 		}
 		this.owners.save(owner);
+	}
+
+	@GetMapping("/pets/{petId}/delete")
+	public String initDeletePetForm(Owner owner, @PathVariable("petId") int petId, ModelMap model) {
+		Pet pet = owner.getPet(petId);
+		model.addAttribute("visitCount", (pet != null) ? pet.getVisits().size() : 0);
+		return VIEWS_PETS_CONFIRM_DELETE;
+	}
+
+	@PostMapping("/pets/{petId}/delete")
+	public String processDeletePet(Owner owner, @PathVariable("petId") int petId,
+			RedirectAttributes redirectAttributes) {
+
+		Pet pet = owner.getPet(petId);
+		if (pet == null) {
+			redirectAttributes.addFlashAttribute("error", "Pet not found");
+			return "redirect:/owners/{ownerId}";
+		}
+
+		owner.removePet(pet);
+		this.owners.save(owner);
+		redirectAttributes.addFlashAttribute("message", "Pet has been deleted");
+		return "redirect:/owners/{ownerId}";
 	}
 
 }
