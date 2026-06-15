@@ -18,11 +18,14 @@ package org.springframework.samples.petclinic.model;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.LocalDate;
 import java.util.Locale;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.samples.petclinic.owner.Visit;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import jakarta.validation.ConstraintViolation;
@@ -36,6 +39,21 @@ class ValidatorTests {
 
 	private Validator createValidator() {
 		LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
+		localValidatorFactoryBean.afterPropertiesSet();
+		return localValidatorFactoryBean;
+	}
+
+	/**
+	 * Validator backed by the application message bundle so that custom message keys
+	 * (e.g. {visit.date.future}) resolve exactly as they do at runtime.
+	 */
+	private Validator createValidatorWithMessages() {
+		ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+		messageSource.setBasename("messages/messages");
+		messageSource.setDefaultEncoding("UTF-8");
+
+		LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
+		localValidatorFactoryBean.setValidationMessageSource(messageSource);
 		localValidatorFactoryBean.afterPropertiesSet();
 		return localValidatorFactoryBean;
 	}
@@ -55,6 +73,48 @@ class ValidatorTests {
 		ConstraintViolation<Person> violation = constraintViolations.iterator().next();
 		assertThat(violation.getPropertyPath()).hasToString("firstName");
 		assertThat(violation.getMessage()).isEqualTo("must not be blank");
+	}
+
+	@Test
+	void shouldNotValidateWhenVisitDateInPast() {
+		LocaleContextHolder.setLocale(Locale.ENGLISH);
+		Visit visit = new Visit();
+		visit.setDescription("Checkup");
+		visit.setDate(LocalDate.now().minusDays(1));
+
+		Validator validator = createValidatorWithMessages();
+		Set<ConstraintViolation<Visit>> constraintViolations = validator.validate(visit);
+
+		assertThat(constraintViolations).hasSize(1);
+		ConstraintViolation<Visit> violation = constraintViolations.iterator().next();
+		assertThat(violation.getPropertyPath()).hasToString("date");
+		assertThat(violation.getMessage()).isEqualTo("must be today or a future date");
+	}
+
+	@Test
+	void shouldValidateWhenVisitDateIsToday() {
+		LocaleContextHolder.setLocale(Locale.ENGLISH);
+		Visit visit = new Visit();
+		visit.setDescription("Checkup");
+		visit.setDate(LocalDate.now());
+
+		Validator validator = createValidator();
+		Set<ConstraintViolation<Visit>> constraintViolations = validator.validate(visit);
+
+		assertThat(constraintViolations).isEmpty();
+	}
+
+	@Test
+	void shouldValidateWhenVisitDateInFuture() {
+		LocaleContextHolder.setLocale(Locale.ENGLISH);
+		Visit visit = new Visit();
+		visit.setDescription("Checkup");
+		visit.setDate(LocalDate.now().plusDays(1));
+
+		Validator validator = createValidator();
+		Set<ConstraintViolation<Visit>> constraintViolations = validator.validate(visit);
+
+		assertThat(constraintViolations).isEmpty();
 	}
 
 }
