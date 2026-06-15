@@ -77,7 +77,7 @@
   descriptive names; ensure dates are derived from `LocalDate.now()`, not
   hard-coded.
 
-### [ ] 2.0 Verify the controller rejects past dates and preserves the happy path
+### [x] 2.0 Verify the controller rejects past dates and preserves the happy path
 
 #### 2.0 Proof Artifact(s)
 
@@ -92,31 +92,31 @@
 
 #### 2.0 Tasks
 
-- [ ] 2.1 (RED) In `VisitControllerTests.java`, add `testProcessNewVisitFormPastDateRejected`:
+- [x] 2.1 (RED) In `VisitControllerTests.java`, add `testProcessNewVisitFormPastDateRejected`:
   POST to `/owners/{ownerId}/pets/{petId}/visits/new` with a valid `description`
   and `date` = `LocalDate.now().minusDays(1)` formatted `yyyy-MM-dd`. Assert
   `status().isOk()`, `view().name("pets/createOrUpdateVisitForm")`, and
   `model().attributeHasFieldErrors("visit", "date")`. Run
   `./mvnw test -Dtest=VisitControllerTests` and confirm it FAILS (currently the
   past date would redirect).
-- [ ] 2.1a (RED) In the same `testProcessNewVisitFormPastDateRejected` test, also
+- [x] 2.1a (RED) In the same `testProcessNewVisitFormPastDateRejected` test, also
   assert the re-rendered form preserves the user's input: the `visit` model
   attribute retains the submitted `description`
   (`model().attribute("visit", hasProperty("description", is("...")))`) and the
   rejected `date` value is retained on the bound object. This closes the Unit 2
   requirement that entered values are preserved on redisplay. Confirm the new
   assertion FAILS before implementation.
-- [ ] 2.2 (VERIFY happy path) Confirm `testProcessNewVisitFormSuccess` still
+- [x] 2.2 (VERIFY happy path) Confirm `testProcessNewVisitFormSuccess` still
   passes after the entity change (it posts no `date`, so the constructor default
   of today remains valid). If brittle, make its valid date explicit using
   `LocalDate.now()` formatted `yyyy-MM-dd`.
-- [ ] 2.3 (GREEN) Confirm no controller code change is required — the existing
+- [x] 2.3 (GREEN) Confirm no controller code change is required — the existing
   `if (result.hasErrors())` branch already returns the form view. Make the test
   from 2.1 pass via the entity annotation added in 1.3 only. If a gap is found,
   make the minimum change in `VisitController` to satisfy the test.
-- [ ] 2.4 (VERIFY) Run `./mvnw test -Dtest=VisitControllerTests`; confirm the new
+- [x] 2.4 (VERIFY) Run `./mvnw test -Dtest=VisitControllerTests`; confirm the new
   past-date test and the existing happy-path/error tests all PASS.
-- [ ] 2.5 (REFACTOR) Ensure the new test uses Arrange-Act-Assert, a descriptive
+- [x] 2.5 (REFACTOR) Ensure the new test uses Arrange-Act-Assert, a descriptive
   name, and a date derived from `LocalDate.now()`.
 
 ### [ ] 3.0 Prove the flow end-to-end and remove the past-date regression in existing e2e
