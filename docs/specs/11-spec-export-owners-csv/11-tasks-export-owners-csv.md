@@ -121,7 +121,7 @@ embedded quotes), CRLF row terminators, and UTF-8 encoding.
   package-private helper for clarity; ensure no duplication, then confirm all 2.x
   tests pass via `./mvnw test -Dtest=OwnerCsvExportControllerTests`.
 
-### [ ] 3.0 Proof artifacts and documentation
+### [x] 3.0 Proof artifacts and documentation
 
 Capture reproducible evidence the feature works end to end: `curl` snippets for a
 filtered export and an unfiltered export saved to a proof document, and confirm
@@ -141,14 +141,14 @@ the full Maven suite passes (the pre-commit gate). Optionally add the Playwright
 
 #### 3.0 Tasks
 
-- [ ] 3.1 Start the app (`./mvnw spring-boot:run`, H2 default seed data) and capture
+- [x] 3.1 Start the app (`./mvnw spring-boot:run`, H2 default seed data) and capture
   a `curl -s "http://localhost:8080/owners.csv?lastName=Davis"` snippet showing the
   header row plus the matching owner rows.
-- [ ] 3.2 Capture a `curl -sD - "http://localhost:8080/owners.csv" -o /dev/null`
+- [x] 3.2 Capture a `curl -sD - "http://localhost:8080/owners.csv" -o /dev/null`
   snippet showing the `Content-Type: text/csv` and
   `Content-Disposition: attachment; filename="owners.csv"` response headers.
-- [ ] 3.3 Save both snippets (sanitized, seed data only) into
+- [x] 3.3 Save both snippets (sanitized, seed data only) into
   `docs/specs/11-spec-export-owners-csv/11-proofs/11-proofs-export-owners-csv.md`
   with the exact commands used.
-- [ ] 3.4 Run the full `./mvnw test` suite, confirm it exits `0`, and record the
+- [x] 3.4 Run the full `./mvnw test` suite, confirm it exits `0`, and record the
   summary line in the proof document.
