@@ -15,6 +15,8 @@
  */
 package org.springframework.samples.petclinic.owner;
 
+import java.nio.charset.StandardCharsets;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
@@ -31,7 +33,8 @@ import org.springframework.web.bind.annotation.RequestParam;
  * with AND) and returns every matching owner (unpaged) as a downloadable {@code text/csv}
  * response. The CSV is RFC 4180 compliant: a header row, CRLF line terminators, and
  * fields containing a comma, double quote, or line break are quoted with embedded quotes
- * doubled.
+ * doubled. The response is encoded as UTF-8 and advertises {@code charset=UTF-8} on the
+ * content type so non-ASCII owner names and addresses are not corrupted.
  *
  * @author Andrew Noble
  */
@@ -68,7 +71,7 @@ class OwnerCsvExportController {
 		}
 
 		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.parseMediaType("text/csv"));
+		headers.setContentType(new MediaType("text", "csv", StandardCharsets.UTF_8));
 		headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"owners.csv\"");
 		return new ResponseEntity<>(csv.toString(), headers, HttpStatus.OK);
 	}

@@ -16,6 +16,7 @@
 
 package org.springframework.samples.petclinic.owner;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -159,6 +160,7 @@ class OwnerCsvExportControllerTests {
 		this.mockMvc.perform(get("/owners.csv"))
 			.andExpect(status().isOk())
 			.andExpect(content().contentTypeCompatibleWith("text/csv"))
+			.andExpect(header().string("Content-Type", containsString("charset=UTF-8")))
 			.andExpect(header().string("Content-Disposition", "attachment; filename=\"owners.csv\""));
 	}
 
@@ -192,6 +194,22 @@ class OwnerCsvExportControllerTests {
 
 		assertThat(body).contains("\"Smith \"\"Jr\"\", III\"");
 		assertThat(body).contains("\"12 Main St.\nApt 4\"");
+	}
+
+	@Test
+	void exportEncodesNonAsciiFieldsAsUtf8() throws Exception {
+		given(this.owners.findByOptionalCriteria(any(), any(), any(), any(Pageable.class)))
+			.willReturn(page(owner("José", "Müller", "Çankaya Cd. 5", "München", "6085551023")));
+
+		byte[] body = this.mockMvc.perform(get("/owners.csv"))
+			.andExpect(status().isOk())
+			.andReturn()
+			.getResponse()
+			.getContentAsByteArray();
+
+		// the non-ASCII fields must be encoded as UTF-8, not the ISO-8859-1 default of
+		// Spring's StringHttpMessageConverter
+		assertThat(body).contains("José,Müller,Çankaya Cd. 5,München".getBytes(StandardCharsets.UTF_8));
 	}
 
 }
