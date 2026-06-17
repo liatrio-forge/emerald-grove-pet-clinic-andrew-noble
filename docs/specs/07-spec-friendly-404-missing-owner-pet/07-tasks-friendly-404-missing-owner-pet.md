@@ -110,7 +110,7 @@ Tasks for implementing
   `./mvnw test -Dtest=VisitControllerTests`; confirm new tests pass and existing
   tests stay green. Run `./mvnw spring-javaformat:apply`.
 
-### [ ] 3.0 Recovery link back to Find Owners on the friendly error page
+### [x] 3.0 Recovery link back to Find Owners on the friendly error page
 
 #### 3.0 Proof Artifact(s)
 
@@ -122,10 +122,10 @@ Tasks for implementing
 
 #### 3.0 Tasks
 
-- [ ] 3.1 In `templates/error.html`, add a recovery link inside the error card
+- [x] 3.1 In `templates/error.html`, add a recovery link inside the error card
   after the message paragraph:
   `<a class="btn btn-primary" th:href="@{/owners/find}" th:text="#{findOwners}">Find Owners</a>`.
-- [ ] 3.2 Run `./mvnw test -Dtest=I18nPropertiesSyncTest` to confirm no
+- [x] 3.2 Run `./mvnw test -Dtest=I18nPropertiesSyncTest` to confirm no
   hardcoded-string or locale-sync violations were introduced.
 
 ### [ ] 4.0 End-to-end Playwright proof and full regression gate
