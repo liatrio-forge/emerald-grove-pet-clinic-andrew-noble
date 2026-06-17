@@ -38,7 +38,7 @@ Tasks for implementing
 
 ## Tasks
 
-### [ ] 1.0 Missing owner returns a friendly 404 (exception + global handler + owner controller)
+### [x] 1.0 Missing owner returns a friendly 404 (exception + global handler + owner controller)
 
 #### 1.0 Proof Artifact(s)
 
@@ -55,22 +55,22 @@ Tasks for implementing
 
 #### 1.0 Tasks
 
-- [ ] 1.1 (RED) In `OwnerControllerTests`, add `testShowOwnerNotFoundReturns404`
+- [x] 1.1 (RED) In `OwnerControllerTests`, add `testShowOwnerNotFoundReturns404`
   (`GET /owners/999999`) and `testInitUpdateOwnerFormNotFoundReturns404`
   (`GET /owners/999999/edit`), each asserting `status().isNotFound()` and
   `view().name("error")`. Run `./mvnw test -Dtest=OwnerControllerTests` and
   confirm they fail (currently 500).
-- [ ] 1.2 (GREEN) Create `system/NotFoundException.java` as a `RuntimeException`
+- [x] 1.2 (GREEN) Create `system/NotFoundException.java` as a `RuntimeException`
   with a message constructor.
-- [ ] 1.3 (GREEN) Create `system/GlobalExceptionHandler.java` annotated
+- [x] 1.3 (GREEN) Create `system/GlobalExceptionHandler.java` annotated
   `@ControllerAdvice` with an `@ExceptionHandler(NotFoundException.class)` method
   annotated `@ResponseStatus(HttpStatus.NOT_FOUND)` that returns
   `ModelAndView("error")` with `status = 404` and does **not** add the exception
   message to the model.
-- [ ] 1.4 (GREEN) In `OwnerController`, replace the `IllegalArgumentException`
+- [x] 1.4 (GREEN) In `OwnerController`, replace the `IllegalArgumentException`
   thrown for a missing owner in `findOwner(...)` and `showOwner(...)` with
   `NotFoundException`.
-- [ ] 1.5 Run `./mvnw test -Dtest=OwnerControllerTests`; confirm the new tests
+- [x] 1.5 Run `./mvnw test -Dtest=OwnerControllerTests`; confirm the new tests
   pass and existing tests stay green. Run `./mvnw spring-javaformat:apply`.
 
 ### [ ] 2.0 Missing pet (and missing owner on pet/visit routes) returns a friendly 404
