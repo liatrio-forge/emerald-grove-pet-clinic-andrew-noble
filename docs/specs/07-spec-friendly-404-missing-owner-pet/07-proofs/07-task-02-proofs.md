@@ -4,9 +4,16 @@
 
 This task extends the friendly 404 handling to the pet and visit routes. A
 missing pet (or a missing owner reached through a pet/visit URL) now returns
-HTTP 404 and the shared `error` view. `PetController#findPet` previously
-returned `null` for a missing pet (which broke template rendering); it now
-throws `NotFoundException`.
+HTTP 404 and the shared `error` view.
+
+> **Post-rebase reconciliation note:** This branch was rebased onto an updated
+> `main` that merged a *delete-pet* feature (#17). That feature intentionally
+> treats an unknown pet on `/pets/{petId}/delete` as a soft redirect + flash
+> message (not a 404), and it relies on the shared `@ModelAttribute findPet`
+> returning `null` for a missing pet. To avoid changing that merged behavior,
+> the missing-pet 404 is enforced in the **edit handler**
+> (`initUpdateForm`) rather than by making `findPet` throw. The user-facing
+> behavior and the proof tests below (edit route → 404) are unchanged.
 
 ## What This Task Proves
 
@@ -50,9 +57,9 @@ routes did not return 404.
 
 ## Artifact: GREEN — PetControllerTests and VisitControllerTests pass
 
-**What it proves:** After wiring `PetController` (incl. `findPet` null → throw)
-and `VisitController` to `NotFoundException`, all new tests pass and existing
-tests remain green.
+**What it proves:** After wiring `PetController` (missing pet enforced in
+`initUpdateForm`; see reconciliation note) and `VisitController` to
+`NotFoundException`, all new tests pass and existing tests remain green.
 
 **Why it matters:** Demonstrates pet/visit 404 handling works with no
 regression.

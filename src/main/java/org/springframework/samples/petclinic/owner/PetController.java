@@ -83,11 +83,7 @@ class PetController {
 
 		Optional<Owner> optionalOwner = this.owners.findById(ownerId);
 		Owner owner = optionalOwner.orElseThrow(() -> new NotFoundException("Owner not found with id: " + ownerId));
-		Pet pet = owner.getPet(petId);
-		if (pet == null) {
-			throw new NotFoundException("Pet not found with id: " + petId + " for owner with id: " + ownerId);
-		}
-		return pet;
+		return owner.getPet(petId);
 	}
 
 	@InitBinder("owner")
@@ -130,7 +126,10 @@ class PetController {
 	}
 
 	@GetMapping("/pets/{petId}/edit")
-	public String initUpdateForm() {
+	public String initUpdateForm(Owner owner, @PathVariable("petId") int petId) {
+		if (owner.getPet(petId) == null) {
+			throw new NotFoundException("Pet not found with id: " + petId + " for owner with id: " + owner.getId());
+		}
 		return VIEWS_PETS_CREATE_OR_UPDATE_FORM;
 	}
 
