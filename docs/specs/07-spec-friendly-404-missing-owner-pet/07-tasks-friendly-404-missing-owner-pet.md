@@ -128,11 +128,11 @@ Tasks for implementing
 - [x] 3.2 Run `./mvnw test -Dtest=I18nPropertiesSyncTest` to confirm no
   hardcoded-string or locale-sync violations were introduced.
 
-### [ ] 4.0 End-to-end Playwright proof and full regression gate
+### [x] 4.0 End-to-end Playwright proof and full regression gate
 
 #### 4.0 Proof Artifact(s)
 
-- Test: `cd e2e-tests && npx playwright test not-found.spec.ts` passes (3 tests)
+- Test: `cd e2e-tests && npx playwright test not-found.spec.ts` passes (4 tests)
   demonstrates end-to-end 404 status, visible not-found message, and a working
   Find Owners recovery link.
 - Screenshot: `e2e-tests/test-results/.../owner-not-found.png` demonstrates the
@@ -143,7 +143,7 @@ Tasks for implementing
 
 #### 4.0 Tasks
 
-- [ ] 4.1 Create `e2e-tests/tests/features/not-found.spec.ts` with four tests:
+- [x] 4.1 Create `e2e-tests/tests/features/not-found.spec.ts` with four tests:
   (a) `GET /owners/999999` → response status 404 and the
   "The requested page was not found." text is visible, capturing
   `owner-not-found.png`; (b) `GET /owners/1/pets/999999/edit` → status 404 and
@@ -153,9 +153,9 @@ Tasks for implementing
   page body does **not** contain the raw exception text — assert
   `await expect(page.locator('body')).not.toContainText(/Owner not found with id/i)`
   (maps to Unit 1 FR "shall not include stack traces or internal exception text").
-- [ ] 4.2 Run `cd e2e-tests && npx playwright test not-found.spec.ts`; confirm
+- [x] 4.2 Run `cd e2e-tests && npx playwright test not-found.spec.ts`; confirm
   all 3 tests pass and the screenshot artifact is produced.
-- [ ] 4.3 Run the full regression gate: `./mvnw test` (expect BUILD SUCCESS, 0
+- [x] 4.3 Run the full regression gate: `./mvnw test` (expect BUILD SUCCESS, 0
   failures) and `./mvnw spring-javaformat:validate` (expect pass). Confirm
   `CrashControllerTests` and `CrashControllerIntegrationTests` (exercised by the
   full suite) still pass — verifying the new `@ControllerAdvice` only handles
