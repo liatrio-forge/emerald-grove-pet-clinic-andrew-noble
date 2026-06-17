@@ -266,4 +266,18 @@ class PetControllerTests {
 		verify(this.owners, never()).save(any(Owner.class));
 	}
 
+	@Test
+	void testInitCreationFormOwnerNotFoundReturns404() throws Exception {
+		mockMvc.perform(get("/owners/{ownerId}/pets/new", 999999))
+			.andExpect(status().isNotFound())
+			.andExpect(view().name("error"));
+	}
+
+	@Test
+	void testInitUpdateFormPetNotFoundReturns404() throws Exception {
+		mockMvc.perform(get("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, 999999))
+			.andExpect(status().isNotFound())
+			.andExpect(view().name("error"));
+	}
+
 }

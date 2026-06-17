@@ -73,7 +73,7 @@ Tasks for implementing
 - [x] 1.5 Run `./mvnw test -Dtest=OwnerControllerTests`; confirm the new tests
   pass and existing tests stay green. Run `./mvnw spring-javaformat:apply`.
 
-### [ ] 2.0 Missing pet (and missing owner on pet/visit routes) returns a friendly 404
+### [x] 2.0 Missing pet (and missing owner on pet/visit routes) returns a friendly 404
 
 #### 2.0 Proof Artifact(s)
 
@@ -88,25 +88,25 @@ Tasks for implementing
 
 #### 2.0 Tasks
 
-- [ ] 2.1 (RED) In `PetControllerTests`, add
+- [x] 2.1 (RED) In `PetControllerTests`, add
   `testInitCreationFormOwnerNotFoundReturns404`
   (`GET /owners/999999/pets/new`) and `testInitUpdateFormPetNotFoundReturns404`
   (`GET /owners/1/pets/999999/edit`), each asserting `status().isNotFound()` and
   `view().name("error")`. Confirm they fail.
-- [ ] 2.2 (RED) In `VisitControllerTests`, add
+- [x] 2.2 (RED) In `VisitControllerTests`, add
   `testInitNewVisitFormOwnerNotFoundReturns404`
   (`GET /owners/999999/pets/1/visits/new`) and
   `testInitNewVisitFormPetNotFoundReturns404`
   (`GET /owners/1/pets/999999/visits/new`), each asserting
   `status().isNotFound()` and `view().name("error")`. Confirm they fail.
-- [ ] 2.3 (GREEN) In `PetController`, replace `IllegalArgumentException` with
+- [x] 2.3 (GREEN) In `PetController`, replace `IllegalArgumentException` with
   `NotFoundException` in `findOwner(...)` and `findPet(...)`, and make
   `findPet(...)` throw `NotFoundException` when `owner.getPet(petId)` returns
   `null` instead of returning `null`.
-- [ ] 2.4 (GREEN) In `VisitController#loadPetWithVisit(...)`, replace both
+- [x] 2.4 (GREEN) In `VisitController#loadPetWithVisit(...)`, replace both
   `IllegalArgumentException` throws (missing owner and missing pet) with
   `NotFoundException`.
-- [ ] 2.5 Run `./mvnw test -Dtest=PetControllerTests` and
+- [x] 2.5 Run `./mvnw test -Dtest=PetControllerTests` and
   `./mvnw test -Dtest=VisitControllerTests`; confirm new tests pass and existing
   tests stay green. Run `./mvnw spring-javaformat:apply`.
 
