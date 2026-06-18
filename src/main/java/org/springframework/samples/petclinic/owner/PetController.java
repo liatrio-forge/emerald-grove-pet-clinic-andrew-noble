@@ -134,8 +134,11 @@ class PetController {
 	}
 
 	@PostMapping("/pets/{petId}/edit")
-	public String processUpdateForm(Owner owner, @Valid Pet pet, BindingResult result,
+	public String processUpdateForm(Owner owner, @PathVariable("petId") int petId, @Valid Pet pet, BindingResult result,
 			RedirectAttributes redirectAttributes) {
+		if (owner.getPet(petId) == null) {
+			throw new NotFoundException("Pet not found with id: " + petId + " for owner with id: " + owner.getId());
+		}
 
 		String petName = pet.getName();
 

@@ -280,4 +280,14 @@ class PetControllerTests {
 			.andExpect(view().name("error"));
 	}
 
+	@Test
+	void testProcessUpdateFormPetNotFoundReturns404() throws Exception {
+		mockMvc
+			.perform(post("/owners/{ownerId}/pets/{petId}/edit", TEST_OWNER_ID, 999999).param("name", "Betty")
+				.param("type", "hamster")
+				.param("birthDate", "2015-02-12"))
+			.andExpect(status().isNotFound())
+			.andExpect(view().name("error"));
+	}
+
 }
