@@ -113,4 +113,18 @@ class VisitControllerTests {
 			.andExpect(model().attribute("visit", hasProperty("date", is(pastLocalDate))));
 	}
 
+	@Test
+	void testInitNewVisitFormOwnerNotFoundReturns404() throws Exception {
+		mockMvc.perform(get("/owners/{ownerId}/pets/{petId}/visits/new", 999999, TEST_PET_ID))
+			.andExpect(status().isNotFound())
+			.andExpect(view().name("error"));
+	}
+
+	@Test
+	void testInitNewVisitFormPetNotFoundReturns404() throws Exception {
+		mockMvc.perform(get("/owners/{ownerId}/pets/{petId}/visits/new", TEST_OWNER_ID, 999999))
+			.andExpect(status().isNotFound())
+			.andExpect(view().name("error"));
+	}
+
 }

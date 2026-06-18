@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.springframework.samples.petclinic.system.NotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.Assert;
@@ -68,8 +69,7 @@ class PetController {
 	@ModelAttribute("owner")
 	public Owner findOwner(@PathVariable("ownerId") int ownerId) {
 		Optional<Owner> optionalOwner = this.owners.findById(ownerId);
-		Owner owner = optionalOwner.orElseThrow(() -> new IllegalArgumentException(
-				"Owner not found with id: " + ownerId + ". Please ensure the ID is correct "));
+		Owner owner = optionalOwner.orElseThrow(() -> new NotFoundException("Owner not found with id: " + ownerId));
 		return owner;
 	}
 
@@ -82,8 +82,7 @@ class PetController {
 		}
 
 		Optional<Owner> optionalOwner = this.owners.findById(ownerId);
-		Owner owner = optionalOwner.orElseThrow(() -> new IllegalArgumentException(
-				"Owner not found with id: " + ownerId + ". Please ensure the ID is correct "));
+		Owner owner = optionalOwner.orElseThrow(() -> new NotFoundException("Owner not found with id: " + ownerId));
 		return owner.getPet(petId);
 	}
 
@@ -127,13 +126,19 @@ class PetController {
 	}
 
 	@GetMapping("/pets/{petId}/edit")
-	public String initUpdateForm() {
+	public String initUpdateForm(Owner owner, @PathVariable("petId") int petId) {
+		if (owner.getPet(petId) == null) {
+			throw new NotFoundException("Pet not found with id: " + petId + " for owner with id: " + owner.getId());
+		}
 		return VIEWS_PETS_CREATE_OR_UPDATE_FORM;
 	}
 
 	@PostMapping("/pets/{petId}/edit")
-	public String processUpdateForm(Owner owner, @Valid Pet pet, BindingResult result,
+	public String processUpdateForm(Owner owner, @PathVariable("petId") int petId, @Valid Pet pet, BindingResult result,
 			RedirectAttributes redirectAttributes) {
+		if (owner.getPet(petId) == null) {
+			throw new NotFoundException("Pet not found with id: " + petId + " for owner with id: " + owner.getId());
+		}
 
 		String petName = pet.getName();
 

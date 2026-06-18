@@ -353,6 +353,20 @@ class OwnerControllerTests {
 	}
 
 	@Test
+	void testShowOwnerNotFoundReturns404() throws Exception {
+		mockMvc.perform(get("/owners/{ownerId}", 999999))
+			.andExpect(status().isNotFound())
+			.andExpect(view().name("error"));
+	}
+
+	@Test
+	void testInitUpdateOwnerFormNotFoundReturns404() throws Exception {
+		mockMvc.perform(get("/owners/{ownerId}/edit", 999999))
+			.andExpect(status().isNotFound())
+			.andExpect(view().name("error"));
+	}
+
+	@Test
 	public void testProcessUpdateOwnerFormWithIdMismatch() throws Exception {
 		int pathOwnerId = 1;
 
