@@ -65,7 +65,7 @@ the schema and seed data for all four DB variants so the new columns exist, are
 - [x] 1.7 Update every `data.sql` (`h2`, `hsqldb`, `postgres`, `mysql`): rewrite existing `visits` inserts to include `start_time = '09:00'` (and `vet_id` NULL), matching each dialect's insert syntax.
 - [x] 1.8 **(REFACTOR/VERIFY)** Run `./mvnw test`; confirm new test passes and all existing visit/upcoming-visit tests remain green. Commit.
 
-### [ ] 2.0 Booking Form with Veterinarian Dropdown, Start-Time Input, and Required-Field Validation
+### [x] 2.0 Booking Form with Veterinarian Dropdown, Start-Time Input, and Required-Field Validation
 
 Extend the booking flow so new appointments capture a **required** veterinarian
 (dropdown from `VetRepository.findAll()`) and a **required** start time, while
@@ -82,14 +82,14 @@ re-render the form with localized field errors and preserved input. (Spec Unit 1
 
 #### 2.0 Tasks
 
-- [ ] 2.1 **(RED)** Add/adjust `VisitControllerTests`: (a) posting without `vetId` returns the form with a `vet` field error; (b) posting without `startTime` returns the form with a `startTime` field error; (c) happy-path with vet+date+time+description redirects. Update the existing success test to include the new required params.
-- [ ] 2.2 **(RED)** Add `VetFormatterTests`: parsing a valid vet id returns the matching `Vet`; parsing an empty string returns `null`; printing a `Vet` yields its id.
-- [ ] 2.3 **(GREEN)** Implement `VetFormatter implements Formatter<Vet>` using `VetRepository` (mirror `PetTypeFormatter`); handle empty input → `null`. Register it (e.g., in the existing `WebConfiguration`/`addFormatters`).
-- [ ] 2.4 **(GREEN)** Add `@NotNull` to `Visit.startTime` and `Visit.vet` (validated on the `@Valid` form path only; DB stays nullable for legacy rows). Wire the messages to keys `visit.startTime.required` / `visit.vet.required`.
-- [ ] 2.5 **(GREEN)** Add `@ModelAttribute("vets")` to `VisitController` returning `vets.findAll()` (inject `VetRepository`); ensure the existing `disallowedFields("id")` init-binder still applies.
-- [ ] 2.6 **(GREEN)** Update `pets/createOrUpdateVisitForm.html`: add a `selectField` Veterinarian dropdown (bound to `visit.vet`, options from `vets`, with an empty default option) and an `inputField` Time input (`type="time"`, bound to `visit.startTime`).
-- [ ] 2.7 **(GREEN)** Add English message keys: `veterinarian`, `appointmentTime`, `visit.startTime.required`, `visit.vet.required`.
-- [ ] 2.8 **(REFACTOR/VERIFY)** Run `./mvnw test`; start the app, capture a screenshot of the booking form with the new fields. Commit.
+- [x] 2.1 **(RED)** Add/adjust `VisitControllerTests`: (a) posting without `vetId` returns the form with a `vet` field error; (b) posting without `startTime` returns the form with a `startTime` field error; (c) happy-path with vet+date+time+description redirects. Update the existing success test to include the new required params.
+- [x] 2.2 **(RED)** Add `VetFormatterTests`: parsing a valid vet id returns the matching `Vet`; parsing an empty string returns `null`; printing a `Vet` yields its id.
+- [x] 2.3 **(GREEN)** Implement `VetFormatter implements Formatter<Vet>` using `VetRepository` (mirror `PetTypeFormatter`); handle empty input → `null`. Register it (e.g., in the existing `WebConfiguration`/`addFormatters`).
+- [x] 2.4 **(GREEN)** Add `@NotNull` to `Visit.startTime` and `Visit.vet` (validated on the `@Valid` form path only; DB stays nullable for legacy rows). Wire the messages to keys `visit.startTime.required` / `visit.vet.required`.
+- [x] 2.5 **(GREEN)** Add `@ModelAttribute("vets")` to `VisitController` returning `vets.findAll()` (inject `VetRepository`); ensure the existing `disallowedFields("id")` init-binder still applies.
+- [x] 2.6 **(GREEN)** Update `pets/createOrUpdateVisitForm.html`: add a `selectField` Veterinarian dropdown (bound to `visit.vet`, options from `vets`, with an empty default option) and an `inputField` Time input (`type="time"`, bound to `visit.startTime`).
+- [x] 2.7 **(GREEN)** Add English message keys: `veterinarian`, `appointmentTime`, `visit.startTime.required`, `visit.vet.required`.
+- [x] 2.8 **(REFACTOR/VERIFY)** Run `./mvnw test`; start the app, capture a screenshot of the booking form with the new fields. Commit.
 
 ### [ ] 3.0 Conflict Detection — No Double-Booking (Vet & Pet)
 

@@ -30,6 +30,37 @@
   <form th:object="${visit}" class="form-horizontal" method="post">
     <div class="form-group has-feedback">
       <input th:replace="~{fragments/inputField :: input ('Date', 'date', 'date')}" />
+
+      <div th:with="valid=${!#fields.hasErrors('startTime')}"
+        th:class="${'form-group' + (valid ? '' : ' has-error')}" class="form-group">
+        <label for="startTime" class="col-sm-2 control-label" th:text="#{appointmentTime}">Time</label>
+        <div class="col-sm-10">
+          <input class="form-control" type="time" th:field="*{startTime}" />
+          <span th:if="${valid}" class="fa fa-ok form-control-feedback" aria-hidden="true"></span>
+          <th:block th:if="${!valid}">
+            <span class="fa fa-remove form-control-feedback" aria-hidden="true"></span>
+            <span class="help-inline" th:errors="*{startTime}" th:text="#{error}">Error</span>
+          </th:block>
+        </div>
+      </div>
+
+      <div th:with="valid=${!#fields.hasErrors('vet')}"
+        th:class="${'form-group' + (valid ? '' : ' has-error')}" class="form-group">
+        <label for="vet" class="col-sm-2 control-label" th:text="#{veterinarian}">Veterinarian</label>
+        <div class="col-sm-10">
+          <select class="form-control" th:field="*{vet}">
+            <option value="" th:text="#{none}">none</option>
+            <option th:each="v : ${vets}" th:value="${v.id}"
+              th:text="${v.firstName + ' ' + v.lastName}">vet name</option>
+          </select>
+          <span th:if="${valid}" class="fa fa-ok form-control-feedback" aria-hidden="true"></span>
+          <th:block th:if="${!valid}">
+            <span class="fa fa-remove form-control-feedback" aria-hidden="true"></span>
+            <span class="help-inline" th:errors="*{vet}" th:text="#{error}">Error</span>
+          </th:block>
+        </div>
+      </div>
+
       <input th:replace="~{fragments/inputField :: input ('Description', 'description', 'text')}" />
     </div>
 

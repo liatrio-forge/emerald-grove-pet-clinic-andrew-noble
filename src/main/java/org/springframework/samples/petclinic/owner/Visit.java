@@ -30,6 +30,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * Simple JavaBean domain object representing a visit.
@@ -54,10 +55,12 @@ public class Visit extends BaseEntity {
 
 	@Column(name = "start_time")
 	@DateTimeFormat(pattern = "HH:mm")
+	@NotNull(message = "{visit.startTime.required}")
 	private LocalTime startTime;
 
 	@ManyToOne
 	@JoinColumn(name = "vet_id")
+	@NotNull(message = "{visit.vet.required}")
 	private Vet vet;
 
 	@NotBlank

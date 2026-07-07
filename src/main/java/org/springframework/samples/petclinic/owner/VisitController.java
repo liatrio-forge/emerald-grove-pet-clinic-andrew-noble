@@ -15,10 +15,13 @@
  */
 package org.springframework.samples.petclinic.owner;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.samples.petclinic.system.NotFoundException;
+import org.springframework.samples.petclinic.vet.Vet;
+import org.springframework.samples.petclinic.vet.VetRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
@@ -44,13 +47,25 @@ class VisitController {
 
 	private final OwnerRepository owners;
 
-	public VisitController(OwnerRepository owners) {
+	private final VetRepository vets;
+
+	public VisitController(OwnerRepository owners, VetRepository vets) {
 		this.owners = owners;
+		this.vets = vets;
 	}
 
 	@InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
 		dataBinder.setDisallowedFields("id");
+	}
+
+	/**
+	 * Supplies the list of veterinarians backing the booking form's vet dropdown.
+	 * @return all veterinarians (served from the cached {@link VetRepository#findAll()})
+	 */
+	@ModelAttribute("vets")
+	public Collection<Vet> populateVets() {
+		return this.vets.findAll();
 	}
 
 	/**
