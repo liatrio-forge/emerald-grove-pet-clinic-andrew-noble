@@ -59,9 +59,9 @@ in the controller.
 
 **Artifact path:** `docs/specs/12-spec-calendar-appointment-booking/12-proofs/images/booking-form.png`
 
-**Result summary:** Captured in the consolidated UI verification pass (see Task 04 proofs),
-which boots the app once and screenshots the booking form, the conflict error, and the
-schedule page together. Image embedded below once captured.
+**Result summary:** Captured against the running app. The form renders the **Time** input
+and a **Veterinarian** dropdown (defaulting to "none") alongside the existing Date and
+Description fields.
 
 ![Booking form with Veterinarian dropdown and Time input](images/booking-form.png)
 

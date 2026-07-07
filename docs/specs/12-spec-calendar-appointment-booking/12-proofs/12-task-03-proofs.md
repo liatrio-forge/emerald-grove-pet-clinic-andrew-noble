@@ -73,8 +73,10 @@ outcomes.
 
 **Artifact path:** `docs/specs/12-spec-calendar-appointment-booking/12-proofs/images/conflict-error.png`
 
-**Result summary:** Captured in the consolidated UI verification pass (see Task 04 proofs).
-Image embedded below once captured.
+**Result summary:** Captured against the running app. Attempting to book Samantha at 10:15
+when she already has a 10:00 appointment re-renders the form with the localized message
+"This time conflicts with an existing appointment." under the Time field, with the entered
+values preserved.
 
 ![Booking form showing the conflict error message](images/conflict-error.png)
 
