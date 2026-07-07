@@ -19,6 +19,7 @@ package org.springframework.samples.petclinic.service;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -271,6 +272,39 @@ class ClinicServiceTests {
 		assertThat(pet7.getVisits()) //
 			.hasSize(found + 1) //
 			.allMatch(value -> value.getId() != null);
+	}
+
+	@Test
+	@Transactional
+	void shouldPersistVisitWithStartTimeAndVet() {
+		Optional<Owner> optionalOwner = this.owners.findById(6);
+		assertThat(optionalOwner).isPresent();
+		Owner owner6 = optionalOwner.get();
+		Pet pet7 = owner6.getPet(7);
+
+		Vet vet = this.vets.findAll().iterator().next();
+
+		Visit appointment = new Visit();
+		appointment.setDescription("time-and-vet appointment");
+		appointment.setStartTime(LocalTime.of(9, 30));
+		appointment.setVet(vet);
+		owner6.addVisit(pet7.getId(), appointment);
+		this.owners.save(owner6);
+
+		this.entityManager.flush();
+		this.entityManager.clear();
+
+		Owner reloaded = this.owners.findById(6).orElseThrow();
+		Visit saved = reloaded.getPet(7)
+			.getVisits()
+			.stream()
+			.filter(v -> "time-and-vet appointment".equals(v.getDescription()))
+			.findFirst()
+			.orElseThrow();
+		assertThat(saved.getStartTime()).isEqualTo(LocalTime.of(9, 30));
+		assertThat(saved.getEndTime()).isEqualTo(LocalTime.of(10, 0));
+		assertThat(saved.getVet()).isNotNull();
+		assertThat(saved.getVet().getId()).isEqualTo(vet.getId());
 	}
 
 	@Test

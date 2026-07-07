@@ -39,7 +39,7 @@ Task list for [12-spec-calendar-appointment-booking.md](12-spec-calendar-appoint
 
 ## Tasks
 
-### [ ] 1.0 Time- & Vet-Aware Appointment Data Model + Multi-DB Migration
+### [x] 1.0 Time- & Vet-Aware Appointment Data Model + Multi-DB Migration
 
 Extend the `Visit` entity with a `startTime` (`LocalTime`), a `@ManyToOne` `Vet`
 association, and a single fixed `APPOINTMENT_DURATION` (30-minute) constant. Update
@@ -56,14 +56,14 @@ the schema and seed data for all four DB variants so the new columns exist, are
 
 #### 1.0 Tasks
 
-- [ ] 1.1 Create a feature branch (e.g., `feat/12-calendar-appointment-booking`) off `main`.
-- [ ] 1.2 **(RED)** Add a failing `@DataJpaTest` (in `ClinicServiceTests`) that builds a `Visit` with `startTime = 09:30` and an associated `Vet`, saves it via the owner aggregate, reloads, and asserts both fields round-trip.
-- [ ] 1.3 **(GREEN)** Add the `startTime` field to `Visit` (`@Column(name = "start_time")`, `@DateTimeFormat(pattern = "HH:mm")`, `LocalTime`) with getter/setter; leave it `null` by default (do not default in the constructor) so it is required on new bookings.
-- [ ] 1.4 **(GREEN)** Add `@ManyToOne @JoinColumn(name = "vet_id")` `Vet vet` to `Visit` with getter/setter (nullable for legacy rows). Add a `public static final Duration APPOINTMENT_DURATION = Duration.ofMinutes(30);` constant and a derived `getEndTime()` helper (`startTime.plus(APPOINTMENT_DURATION)`).
-- [ ] 1.5 Update `db/h2/schema.sql` and `db/hsqldb/schema.sql`: add `start_time TIME` and `vet_id INTEGER` to `visits`, add `FK fk_visits_vets (vet_id) REFERENCES vets(id)`, and an index on `vet_id`.
-- [ ] 1.6 Update `db/postgres/schema.sql` and `db/mysql/schema.sql` with the equivalent column/FK/index DDL for those dialects.
-- [ ] 1.7 Update every `data.sql` (`h2`, `hsqldb`, `postgres`, `mysql`): rewrite existing `visits` inserts to include `start_time = '09:00'` (and `vet_id` NULL), matching each dialect's insert syntax.
-- [ ] 1.8 **(REFACTOR/VERIFY)** Run `./mvnw test`; confirm new test passes and all existing visit/upcoming-visit tests remain green. Commit.
+- [x] 1.1 Create a feature branch (e.g., `feat/12-calendar-appointment-booking`) off `main`.
+- [x] 1.2 **(RED)** Add a failing `@DataJpaTest` (in `ClinicServiceTests`) that builds a `Visit` with `startTime = 09:30` and an associated `Vet`, saves it via the owner aggregate, reloads, and asserts both fields round-trip.
+- [x] 1.3 **(GREEN)** Add the `startTime` field to `Visit` (`@Column(name = "start_time")`, `@DateTimeFormat(pattern = "HH:mm")`, `LocalTime`) with getter/setter; leave it `null` by default (do not default in the constructor) so it is required on new bookings.
+- [x] 1.4 **(GREEN)** Add `@ManyToOne @JoinColumn(name = "vet_id")` `Vet vet` to `Visit` with getter/setter (nullable for legacy rows). Add a `public static final Duration APPOINTMENT_DURATION = Duration.ofMinutes(30);` constant and a derived `getEndTime()` helper (`startTime.plus(APPOINTMENT_DURATION)`).
+- [x] 1.5 Update `db/h2/schema.sql` and `db/hsqldb/schema.sql`: add `start_time TIME` and `vet_id INTEGER` to `visits`, add `FK fk_visits_vets (vet_id) REFERENCES vets(id)`, and an index on `vet_id`.
+- [x] 1.6 Update `db/postgres/schema.sql` and `db/mysql/schema.sql` with the equivalent column/FK/index DDL for those dialects.
+- [x] 1.7 Update every `data.sql` (`h2`, `hsqldb`, `postgres`, `mysql`): rewrite existing `visits` inserts to include `start_time = '09:00'` (and `vet_id` NULL), matching each dialect's insert syntax.
+- [x] 1.8 **(REFACTOR/VERIFY)** Run `./mvnw test`; confirm new test passes and all existing visit/upcoming-visit tests remain green. Commit.
 
 ### [ ] 2.0 Booking Form with Veterinarian Dropdown, Start-Time Input, and Required-Field Validation
 
