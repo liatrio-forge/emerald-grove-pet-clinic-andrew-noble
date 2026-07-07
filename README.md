@@ -82,7 +82,7 @@ Build a Docker container image:
 - **Owners**: Pet owners with contact details and address information
 - **Pets**: Individual pets with type, birth date, and medical history
 - **Vets**: Veterinary staff with specialties and contact information
-- **Visits**: Appointment records with examination details
+- **Visits**: Time-aware appointment records with an assigned veterinarian and examination details
 - **Specialties**: Medical specialties (Radiology, Surgery, Dentistry)
 
 ### Key Functionality
@@ -90,7 +90,9 @@ Build a Docker container image:
 - **Owner Registration**: Add and edit pet owner information
 - **Pet Management**: Register pets, track medical history
 - **Veterinarian Directory**: Browse vet profiles and specialties
-- **Visit Scheduling**: Book and manage veterinary appointments
+- **Visit Scheduling**: Book appointments with a start time and an assigned veterinarian
+- **Conflict Detection**: Reject double-booking the same vet or pet in overlapping slots
+- **Day Schedule**: View all appointments for a chosen day at `/schedule`
 - **Medical Records**: Track treatments, diagnoses, and medications
 
 ### User Interface

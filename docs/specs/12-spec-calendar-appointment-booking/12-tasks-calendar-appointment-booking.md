@@ -145,7 +145,7 @@ template with empty state, prev/next-day navigation, and a nav-bar entry. (Spec 
 - [x] 4.8 **(GREEN)** Add English message keys: `schedule`, `schedule.subtitle`, `schedule.none`, `schedule.prevDay`, `schedule.nextDay`, plus column headers as needed.
 - [x] 4.9 **(REFACTOR/VERIFY)** Run `./mvnw test`; capture screenshots of the populated and empty schedule pages. Commit.
 
-### [ ] 5.0 Internationalization Propagation & Documentation
+### [x] 5.0 Internationalization Propagation & Documentation
 
 Add all new message keys to the base `messages.properties` and propagate to the other
 locale files following the repo convention; update docs if needed. (Cross-cutting;
@@ -159,7 +159,7 @@ supports the Spec i18n success metric.)
 
 #### 5.0 Tasks
 
-- [ ] 5.1 **(RED)** Run `./mvnw test -Dtest=I18nPropertiesSyncTest` to surface any missing/inconsistent keys across locale files for the new strings.
-- [ ] 5.2 **(GREEN)** Add the new keys (veterinarian, appointment time, required/conflict errors, schedule title/subtitle/empty-state, prev/next-day) to each locale file per the existing convention (translated or English-fallback consistent with how prior features handled it).
-- [ ] 5.3 **(GREEN)** Update docs as needed (e.g., note the appointment/conflict feature where the visit feature is described) and ensure markdownlint passes.
-- [ ] 5.4 **(VERIFY)** Run the full `./mvnw test` suite; confirm green. Final commit and open PR.
+- [x] 5.1 **(RED)** Run `./mvnw test -Dtest=I18nPropertiesSyncTest` to surface any missing/inconsistent keys across locale files for the new strings.
+- [x] 5.2 **(GREEN)** Add the new keys (veterinarian, appointment time, required/conflict errors, schedule title/subtitle/empty-state, prev/next-day) to each locale file per the existing convention (translated or English-fallback consistent with how prior features handled it).
+- [x] 5.3 **(GREEN)** Update docs as needed (e.g., note the appointment/conflict feature where the visit feature is described) and ensure markdownlint passes.
+- [x] 5.4 **(VERIFY)** Run the full `./mvnw test` suite; confirm green. Final commit and open PR.
