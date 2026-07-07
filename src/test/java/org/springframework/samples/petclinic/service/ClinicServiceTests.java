@@ -37,6 +37,7 @@ import org.springframework.samples.petclinic.owner.Pet;
 import org.springframework.samples.petclinic.owner.PetType;
 import org.springframework.samples.petclinic.owner.PetTypeRepository;
 import org.springframework.samples.petclinic.owner.Visit;
+import org.springframework.samples.petclinic.owner.VisitRepository;
 import org.springframework.samples.petclinic.vet.Vet;
 import org.springframework.samples.petclinic.vet.VetRepository;
 import org.springframework.transaction.annotation.Transactional;
@@ -83,6 +84,9 @@ class ClinicServiceTests {
 
 	@Autowired
 	protected VetRepository vets;
+
+	@Autowired
+	protected VisitRepository visitRepository;
 
 	@Autowired
 	private TestEntityManager entityManager;
@@ -307,6 +311,46 @@ class ClinicServiceTests {
 		assertThat(saved.getEndTime()).isEqualTo(LocalTime.of(10, 0));
 		assertThat(saved.getVet()).isNotNull();
 		assertThat(saved.getVet().getId()).isEqualTo(vet.getId());
+	}
+
+	@Test
+	@Transactional
+	void shouldFindAppointmentsByVetAndByPetOnDate() {
+		LocalDate date = LocalDate.of(2099, 5, 1);
+		Vet vet = this.vets.findAll().iterator().next();
+		Owner owner6 = this.owners.findById(6).orElseThrow();
+		Pet pet7 = owner6.getPet(7);
+
+		Visit nine = new Visit();
+		nine.setDate(date);
+		nine.setStartTime(LocalTime.of(9, 0));
+		nine.setVet(vet);
+		nine.setDescription("nine");
+		Visit ten = new Visit();
+		ten.setDate(date);
+		ten.setStartTime(LocalTime.of(10, 0));
+		ten.setVet(vet);
+		ten.setDescription("ten");
+		owner6.addVisit(pet7.getId(), nine);
+		owner6.addVisit(pet7.getId(), ten);
+		this.owners.save(owner6);
+		this.entityManager.flush();
+
+		assertThat(this.visitRepository.findByVetAndDate(vet.getId(), date)).hasSize(2);
+		assertThat(this.visitRepository.findByPetAndDate(pet7.getId(), date)).hasSize(2);
+		assertThat(this.visitRepository.findByVetAndDate(vet.getId(), date.plusDays(1))).isEmpty();
+	}
+
+	@Test
+	void findByVetAndDateExcludesLegacyNullVetVisits() {
+		// Seed pet 7 has a legacy visit on 2013-01-01 whose vet is NULL.
+		LocalDate legacyDate = LocalDate.of(2013, 1, 1);
+		Vet vet = this.vets.findAll().iterator().next();
+
+		// The null-vet legacy row never appears as a vet conflict...
+		assertThat(this.visitRepository.findByVetAndDate(vet.getId(), legacyDate)).isEmpty();
+		// ...but the pet-level query still finds it.
+		assertThat(this.visitRepository.findByPetAndDate(7, legacyDate)).hasSize(1);
 	}
 
 	@Test

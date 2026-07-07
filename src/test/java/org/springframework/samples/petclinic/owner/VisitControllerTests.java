@@ -18,7 +18,12 @@ package org.springframework.samples.petclinic.owner;
 
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
@@ -39,6 +44,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
@@ -50,7 +56,8 @@ import java.util.Optional;
  * @author Wick Dynex
  */
 @WebMvcTest(value = VisitController.class,
-		includeFilters = @ComponentScan.Filter(value = VetFormatter.class, type = FilterType.ASSIGNABLE_TYPE))
+		includeFilters = { @ComponentScan.Filter(value = VetFormatter.class, type = FilterType.ASSIGNABLE_TYPE),
+				@ComponentScan.Filter(value = AppointmentConflictDetector.class, type = FilterType.ASSIGNABLE_TYPE) })
 @DisabledInNativeImage
 @DisabledInAotMode
 class VisitControllerTests {
@@ -69,6 +76,9 @@ class VisitControllerTests {
 
 	@MockitoBean
 	private VetRepository vets;
+
+	@MockitoBean
+	private VisitRepository visits;
 
 	@BeforeEach
 	void init() {
@@ -137,6 +147,65 @@ class VisitControllerTests {
 			.andExpect(status().isOk())
 			.andExpect(view().name("pets/createOrUpdateVisitForm"))
 			.andExpect(model().attributeHasFieldErrors("visit", "startTime"));
+	}
+
+	@Test
+	void testProcessNewVisitFormVetConflictRejected() throws Exception {
+		// The vet already has an overlapping 09:15 appointment on that day.
+		Visit existing = new Visit();
+		existing.setStartTime(LocalTime.of(9, 15));
+		given(this.visits.findByVetAndDate(eq(TEST_VET_ID), any())).willReturn(List.of(existing));
+
+		mockMvc
+			.perform(post("/owners/{ownerId}/pets/{petId}/visits/new", TEST_OWNER_ID, TEST_PET_ID)
+				.param("date", LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE))
+				.param("startTime", "09:00")
+				.param("vet", String.valueOf(TEST_VET_ID))
+				.param("description", "Overlaps the vet"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("pets/createOrUpdateVisitForm"))
+			.andExpect(model().attributeHasFieldErrors("visit", "startTime"));
+
+		verify(this.owners, never()).save(any());
+	}
+
+	@Test
+	void testProcessNewVisitFormPetConflictRejected() throws Exception {
+		// No vet conflict, but the pet already has an overlapping 09:15 appointment.
+		Visit existing = new Visit();
+		existing.setStartTime(LocalTime.of(9, 15));
+		given(this.visits.findByPetAndDate(eq(TEST_PET_ID), any())).willReturn(List.of(existing));
+
+		mockMvc
+			.perform(post("/owners/{ownerId}/pets/{petId}/visits/new", TEST_OWNER_ID, TEST_PET_ID)
+				.param("date", LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE))
+				.param("startTime", "09:00")
+				.param("vet", String.valueOf(TEST_VET_ID))
+				.param("description", "Overlaps the pet"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("pets/createOrUpdateVisitForm"))
+			.andExpect(model().attributeHasFieldErrors("visit", "startTime"));
+
+		verify(this.owners, never()).save(any());
+	}
+
+	@Test
+	void testProcessNewVisitFormBackToBackAllowed() throws Exception {
+		// An existing 09:00-09:30 appointment must not block a back-to-back 09:30
+		// booking.
+		Visit existing = new Visit();
+		existing.setStartTime(LocalTime.of(9, 0));
+		given(this.visits.findByVetAndDate(anyInt(), any())).willReturn(List.of(existing));
+		given(this.visits.findByPetAndDate(anyInt(), any())).willReturn(List.of(existing));
+
+		mockMvc
+			.perform(post("/owners/{ownerId}/pets/{petId}/visits/new", TEST_OWNER_ID, TEST_PET_ID)
+				.param("date", LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE))
+				.param("startTime", "09:30")
+				.param("vet", String.valueOf(TEST_VET_ID))
+				.param("description", "Back to back"))
+			.andExpect(status().is3xxRedirection())
+			.andExpect(view().name("redirect:/owners/{ownerId}"));
 	}
 
 	@Test

@@ -49,4 +49,30 @@ public interface VisitRepository extends Repository<Visit, Integer> {
 			""")
 	List<UpcomingVisit> findUpcomingVisits(@Param("start") LocalDate start, @Param("end") LocalDate end);
 
+	/**
+	 * Find the appointments booked for a given veterinarian on a given date. Legacy
+	 * visits with no assigned vet are excluded (their {@code vet} is null), so they never
+	 * appear as a vet conflict.
+	 * @param vetId the veterinarian's id
+	 * @param date the date to search
+	 * @return the matching appointments, empty if none
+	 */
+	@Query("""
+			SELECT v FROM Owner o JOIN o.pets p JOIN p.visits v
+			WHERE v.vet.id = :vetId AND v.date = :date
+			""")
+	List<Visit> findByVetAndDate(@Param("vetId") int vetId, @Param("date") LocalDate date);
+
+	/**
+	 * Find the appointments booked for a given pet on a given date.
+	 * @param petId the pet's id
+	 * @param date the date to search
+	 * @return the matching appointments, empty if none
+	 */
+	@Query("""
+			SELECT v FROM Owner o JOIN o.pets p JOIN p.visits v
+			WHERE p.id = :petId AND v.date = :date
+			""")
+	List<Visit> findByPetAndDate(@Param("petId") int petId, @Param("date") LocalDate date);
+
 }

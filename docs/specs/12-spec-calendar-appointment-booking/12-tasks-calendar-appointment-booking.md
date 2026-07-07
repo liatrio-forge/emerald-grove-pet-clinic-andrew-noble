@@ -91,7 +91,7 @@ re-render the form with localized field errors and preserved input. (Spec Unit 1
 - [x] 2.7 **(GREEN)** Add English message keys: `veterinarian`, `appointmentTime`, `visit.startTime.required`, `visit.vet.required`.
 - [x] 2.8 **(REFACTOR/VERIFY)** Run `./mvnw test`; start the app, capture a screenshot of the booking form with the new fields. Commit.
 
-### [ ] 3.0 Conflict Detection — No Double-Booking (Vet & Pet)
+### [x] 3.0 Conflict Detection — No Double-Booking (Vet & Pet)
 
 Add server-side overlap detection using the half-open rule
 `startA < endB && startB < endA` (each `end = start + APPOINTMENT_DURATION`). Add
@@ -109,14 +109,14 @@ false vet-conflicts. (Spec Unit 2.)
 
 #### 3.0 Tasks
 
-- [ ] 3.1 **(RED)** Add `AppointmentConflictDetectorTests` covering the pure overlap rule: partial overlap → conflict; identical start → conflict; back-to-back (end == start) → no conflict; fully separate → no conflict.
-- [ ] 3.2 **(GREEN)** Implement `AppointmentConflictDetector` with a pure `overlaps(LocalTime startA, LocalTime startB)` method using `APPOINTMENT_DURATION` and the half-open `[start, end)` rule.
-- [ ] 3.3 **(RED)** Add a `@DataJpaTest` (in `ClinicServiceTests`) asserting `findByVetAndDate` and `findByPetAndDate` return the expected same-day appointments.
-- [ ] 3.4 **(GREEN)** Add JPQL queries to `VisitRepository` returning appointments (with `startTime`) for a given `vetId`+`date` and a given `petId`+`date`.
-- [ ] 3.5 **(RED)** Add `VisitControllerTests`: overlapping same-vet booking rejected with error + no save; overlapping same-pet booking rejected; a booking whose only same-time peer has a NULL vet is **not** flagged as a vet conflict.
-- [ ] 3.6 **(GREEN)** Inject `AppointmentConflictDetector` + repository queries into `VisitController.processNewVisitForm`; on conflict, `result.rejectValue("startTime", "visit.conflict", ...)` (or a global error) and re-render without saving. Apply the vet check only when a vet is assigned.
-- [ ] 3.7 **(GREEN)** Add English message key `visit.conflict` (e.g., "This time conflicts with an existing appointment.").
-- [ ] 3.8 **(REFACTOR/VERIFY)** Run `./mvnw test`; verify branch coverage on the detector; capture a screenshot of the conflict error. Commit.
+- [x] 3.1 **(RED)** Add `AppointmentConflictDetectorTests` covering the pure overlap rule: partial overlap → conflict; identical start → conflict; back-to-back (end == start) → no conflict; fully separate → no conflict.
+- [x] 3.2 **(GREEN)** Implement `AppointmentConflictDetector` with a pure `overlaps(LocalTime startA, LocalTime startB)` method using `APPOINTMENT_DURATION` and the half-open `[start, end)` rule.
+- [x] 3.3 **(RED)** Add a `@DataJpaTest` (in `ClinicServiceTests`) asserting `findByVetAndDate` and `findByPetAndDate` return the expected same-day appointments.
+- [x] 3.4 **(GREEN)** Add JPQL queries to `VisitRepository` returning appointments (with `startTime`) for a given `vetId`+`date` and a given `petId`+`date`.
+- [x] 3.5 **(RED)** Add `VisitControllerTests`: overlapping same-vet booking rejected with error + no save; overlapping same-pet booking rejected; a booking whose only same-time peer has a NULL vet is **not** flagged as a vet conflict.
+- [x] 3.6 **(GREEN)** Inject `AppointmentConflictDetector` + repository queries into `VisitController.processNewVisitForm`; on conflict, `result.rejectValue("startTime", "visit.conflict", ...)` (or a global error) and re-render without saving. Apply the vet check only when a vet is assigned.
+- [x] 3.7 **(GREEN)** Add English message key `visit.conflict` (e.g., "This time conflicts with an existing appointment.").
+- [x] 3.8 **(REFACTOR/VERIFY)** Run `./mvnw test`; verify branch coverage on the detector; capture a screenshot of the conflict error. Commit.
 
 ### [ ] 4.0 Clinic-Wide Day Schedule Page
 

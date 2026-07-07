@@ -49,9 +49,12 @@ class VisitController {
 
 	private final VetRepository vets;
 
-	public VisitController(OwnerRepository owners, VetRepository vets) {
+	private final AppointmentConflictDetector conflictDetector;
+
+	public VisitController(OwnerRepository owners, VetRepository vets, AppointmentConflictDetector conflictDetector) {
 		this.owners = owners;
 		this.vets = vets;
+		this.conflictDetector = conflictDetector;
 	}
 
 	@InitBinder
@@ -105,6 +108,15 @@ class VisitController {
 	@PostMapping("/owners/{ownerId}/pets/{petId}/visits/new")
 	public String processNewVisitForm(@ModelAttribute Owner owner, @PathVariable int petId, @Valid Visit visit,
 			BindingResult result, RedirectAttributes redirectAttributes) {
+		if (!result.hasErrors()) {
+			boolean conflict = this.conflictDetector.hasVetConflict(visit.getVet(), visit.getDate(),
+					visit.getStartTime())
+					|| this.conflictDetector.hasPetConflict(petId, visit.getDate(), visit.getStartTime());
+			if (conflict) {
+				result.rejectValue("startTime", "visit.conflict", "This time conflicts with an existing appointment.");
+			}
+		}
+
 		if (result.hasErrors()) {
 			return "pets/createOrUpdateVisitForm";
 		}
