@@ -75,4 +75,21 @@ public interface VisitRepository extends Repository<Visit, Integer> {
 			""")
 	List<Visit> findByPetAndDate(@Param("petId") int petId, @Param("date") LocalDate date);
 
+	/**
+	 * Retrieve every appointment on the given date across the whole clinic, projected
+	 * into {@link ScheduledAppointment} view models and ordered by start time then vet
+	 * last name so the day reads top-to-bottom chronologically. Uses a {@code LEFT JOIN}
+	 * on the vet so legacy appointments with no assigned vet are still included.
+	 * @param date the day to list
+	 * @return the day's appointments, empty if none
+	 */
+	@Query("""
+			SELECT new org.springframework.samples.petclinic.owner.ScheduledAppointment(
+				o.id, o.firstName, o.lastName, p.name, vet.firstName, vet.lastName, v.date, v.startTime, v.description)
+			FROM Owner o JOIN o.pets p JOIN p.visits v LEFT JOIN v.vet vet
+			WHERE v.date = :date
+			ORDER BY v.startTime, vet.lastName
+			""")
+	List<ScheduledAppointment> findScheduledAppointmentsByDate(@Param("date") LocalDate date);
+
 }

@@ -21,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -36,6 +37,7 @@ import org.springframework.samples.petclinic.owner.OwnerRepository;
 import org.springframework.samples.petclinic.owner.Pet;
 import org.springframework.samples.petclinic.owner.PetType;
 import org.springframework.samples.petclinic.owner.PetTypeRepository;
+import org.springframework.samples.petclinic.owner.ScheduledAppointment;
 import org.springframework.samples.petclinic.owner.Visit;
 import org.springframework.samples.petclinic.owner.VisitRepository;
 import org.springframework.samples.petclinic.vet.Vet;
@@ -339,6 +341,38 @@ class ClinicServiceTests {
 		assertThat(this.visitRepository.findByVetAndDate(vet.getId(), date)).hasSize(2);
 		assertThat(this.visitRepository.findByPetAndDate(pet7.getId(), date)).hasSize(2);
 		assertThat(this.visitRepository.findByVetAndDate(vet.getId(), date.plusDays(1))).isEmpty();
+	}
+
+	@Test
+	@Transactional
+	void shouldFindClinicWideAppointmentsByDateOrderedByTime() {
+		LocalDate date = LocalDate.of(2099, 7, 1);
+		Vet vet = this.vets.findAll().iterator().next();
+		Owner owner6 = this.owners.findById(6).orElseThrow();
+		Pet pet7 = owner6.getPet(7);
+
+		Visit later = new Visit();
+		later.setDate(date);
+		later.setStartTime(LocalTime.of(11, 0));
+		later.setVet(vet);
+		later.setDescription("later");
+		Visit earlier = new Visit();
+		earlier.setDate(date);
+		earlier.setStartTime(LocalTime.of(9, 0));
+		earlier.setVet(vet);
+		earlier.setDescription("earlier");
+		owner6.addVisit(pet7.getId(), later);
+		owner6.addVisit(pet7.getId(), earlier);
+		this.owners.save(owner6);
+		this.entityManager.flush();
+		this.entityManager.clear();
+
+		List<ScheduledAppointment> result = this.visitRepository.findScheduledAppointmentsByDate(date);
+
+		assertThat(result).extracting(ScheduledAppointment::getStartTime)
+			.containsExactly(LocalTime.of(9, 0), LocalTime.of(11, 0));
+		assertThat(result.get(0).getDescription()).isEqualTo("earlier");
+		assertThat(result.get(0).getVetName()).isNotBlank();
 	}
 
 	@Test

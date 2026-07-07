@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+
+<html xmlns:th="https://www.thymeleaf.org"
+  th:replace="~{fragments/layout :: layout (~{::body},'schedule')}">
+
+<body>
+
+  <section class="liatrio-section">
+    <div class="liatrio-table-card">
+      <div class="liatrio-card-header">
+        <h2 th:text="#{schedule}">Schedule</h2>
+        <p class="liatrio-muted"
+          th:text="#{schedule.subtitle(${#temporals.format(day, 'yyyy-MM-dd')})}">Appointments for the day.</p>
+      </div>
+
+      <div class="schedule-nav">
+        <a class="btn btn-default" th:href="@{/schedule(date=${prevDay})}"
+          th:text="#{schedule.prevDay}">Previous day</a>
+        <form method="get" th:action="@{/schedule}" class="schedule-date-form">
+          <label for="scheduleDate" th:text="#{date}">Date</label>
+          <input type="date" id="scheduleDate" name="date"
+            th:value="${#temporals.format(day, 'yyyy-MM-dd')}" onchange="this.form.submit()" />
+        </form>
+        <a class="btn btn-default" th:href="@{/schedule(date=${nextDay})}"
+          th:text="#{schedule.nextDay}">Next day</a>
+      </div>
+
+      <table th:if="${!appointments.empty}" id="schedule" class="table table-striped liatrio-table">
+        <thead>
+          <tr>
+            <th th:text="#{appointmentTime}">Time</th>
+            <th th:text="#{pet}">Pet</th>
+            <th th:text="#{owner}">Owner</th>
+            <th th:text="#{veterinarian}">Veterinarian</th>
+            <th th:text="#{description}">Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="appt : ${appointments}">
+            <td th:text="${#temporals.format(appt.startTime, 'HH:mm')}">time</td>
+            <td th:text="${appt.petName}">pet name</td>
+            <td>
+              <a th:href="@{/owners/{id}(id=${appt.ownerId})}" th:text="${appt.ownerName}">owner name</a>
+            </td>
+            <td th:text="${appt.vetName}">vet name</td>
+            <td th:text="${appt.description}">description</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p th:if="${appointments.empty}" class="liatrio-muted" th:text="#{schedule.none}">There are no appointments on this day.</p>
+    </div>
+  </section>
+
+</body>
+
+</html>

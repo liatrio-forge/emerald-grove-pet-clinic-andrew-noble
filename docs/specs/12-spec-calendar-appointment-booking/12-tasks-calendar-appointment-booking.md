@@ -118,7 +118,7 @@ false vet-conflicts. (Spec Unit 2.)
 - [x] 3.7 **(GREEN)** Add English message key `visit.conflict` (e.g., "This time conflicts with an existing appointment.").
 - [x] 3.8 **(REFACTOR/VERIFY)** Run `./mvnw test`; verify branch coverage on the detector; capture a screenshot of the conflict error. Commit.
 
-### [ ] 4.0 Clinic-Wide Day Schedule Page
+### [x] 4.0 Clinic-Wide Day Schedule Page
 
 Add a read-only `GET /schedule` route listing all appointments for a single date,
 defaulting to today and accepting an optional `date=yyyy-MM-dd` (invalid/missing →
@@ -135,15 +135,15 @@ template with empty state, prev/next-day navigation, and a nav-bar entry. (Spec 
 
 #### 4.0 Tasks
 
-- [ ] 4.1 **(GREEN)** Create the `ScheduledAppointment` DTO (ownerId, ownerFirstName, ownerLastName, petName, vetFirstName, vetLastName, date, startTime, description) with a constructor suitable for a JPQL constructor expression.
-- [ ] 4.2 **(RED)** Add a `@DataJpaTest` (in `ClinicServiceTests`) asserting the clinic-wide "find appointments by date" query returns rows for that date ordered by `startTime` then vet.
-- [ ] 4.3 **(GREEN)** Add the JPQL constructor-expression query `findScheduledAppointmentsByDate(LocalDate date)` to `VisitRepository` (root at `Owner`, traverse `pets`→`visits`, left-join `vet`).
-- [ ] 4.4 **(RED)** Add `ScheduleControllerTests`: default (no param) → today's view; `?date=` valid → that day; `?date=` invalid/blank → today fallback; empty result → empty-state model; ordering preserved.
-- [ ] 4.5 **(GREEN)** Implement `ScheduleController` with `GET /schedule`, resilient date parsing (mirror the Upcoming Visits param pattern), and model attributes for the day, prev/next dates, and the appointment list.
-- [ ] 4.6 **(GREEN)** Create `schedule/daySchedule.html` using the layout + Liatrio table styling: columns start time / pet / owner (linked) / vet / description, an empty-state message, and prev/next-day links + a date picker.
-- [ ] 4.7 **(GREEN)** Add a "Schedule" `menuItem` entry to `fragments/layout.html` nav, consistent with the Upcoming Visits entry.
-- [ ] 4.8 **(GREEN)** Add English message keys: `schedule`, `schedule.subtitle`, `schedule.none`, `schedule.prevDay`, `schedule.nextDay`, plus column headers as needed.
-- [ ] 4.9 **(REFACTOR/VERIFY)** Run `./mvnw test`; capture screenshots of the populated and empty schedule pages. Commit.
+- [x] 4.1 **(GREEN)** Create the `ScheduledAppointment` DTO (ownerId, ownerFirstName, ownerLastName, petName, vetFirstName, vetLastName, date, startTime, description) with a constructor suitable for a JPQL constructor expression.
+- [x] 4.2 **(RED)** Add a `@DataJpaTest` (in `ClinicServiceTests`) asserting the clinic-wide "find appointments by date" query returns rows for that date ordered by `startTime` then vet.
+- [x] 4.3 **(GREEN)** Add the JPQL constructor-expression query `findScheduledAppointmentsByDate(LocalDate date)` to `VisitRepository` (root at `Owner`, traverse `pets`→`visits`, left-join `vet`).
+- [x] 4.4 **(RED)** Add `ScheduleControllerTests`: default (no param) → today's view; `?date=` valid → that day; `?date=` invalid/blank → today fallback; empty result → empty-state model; ordering preserved.
+- [x] 4.5 **(GREEN)** Implement `ScheduleController` with `GET /schedule`, resilient date parsing (mirror the Upcoming Visits param pattern), and model attributes for the day, prev/next dates, and the appointment list.
+- [x] 4.6 **(GREEN)** Create `schedule/daySchedule.html` using the layout + Liatrio table styling: columns start time / pet / owner (linked) / vet / description, an empty-state message, and prev/next-day links + a date picker.
+- [x] 4.7 **(GREEN)** Add a "Schedule" `menuItem` entry to `fragments/layout.html` nav, consistent with the Upcoming Visits entry.
+- [x] 4.8 **(GREEN)** Add English message keys: `schedule`, `schedule.subtitle`, `schedule.none`, `schedule.prevDay`, `schedule.nextDay`, plus column headers as needed.
+- [x] 4.9 **(REFACTOR/VERIFY)** Run `./mvnw test`; capture screenshots of the populated and empty schedule pages. Commit.
 
 ### [ ] 5.0 Internationalization Propagation & Documentation
 
