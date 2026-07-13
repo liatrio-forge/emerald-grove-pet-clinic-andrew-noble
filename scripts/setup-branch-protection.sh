@@ -7,6 +7,7 @@
 #
 # Requirements:
 #   - gh CLI authenticated (`gh auth status`)
+#   - jq
 #   - admin permission on the target repository
 #
 # Usage:
@@ -23,11 +24,40 @@ CHECK_CONTEXT="${CHECK_CONTEXT:-Build & Test}"
 echo "Configuring branch protection on ${REPO}@${BRANCH}"
 echo "Requiring status check: ${CHECK_CONTEXT}"
 
-gh api \
-  --method PUT \
-  -H "Accept: application/vnd.github+json" \
-  "repos/${REPO}/branches/${BRANCH}/protection" \
-  --input - <<JSON
+EXISTING_PROTECTION="$(gh api "repos/${REPO}/branches/${BRANCH}/protection" 2>/dev/null || true)"
+
+if [[ -n "${EXISTING_PROTECTION}" ]]; then
+  STATUS_CHECKS_PAYLOAD="$(
+    jq --arg check "${CHECK_CONTEXT}" '
+      def normalize_check:
+        { context: .context } + (if .app_id? != null then { app_id: .app_id } else {} end);
+      def unique_by_context:
+        reduce .[] as $item ([]; if any(.[]; .context == $item.context) then . else . + [$item] end);
+
+      (.required_status_checks // {}) as $status
+      | {
+          strict: (if $status.strict == null then true else $status.strict end),
+          checks: (
+            ([$status.checks[]? | select(.context != null) | normalize_check]
+              + [$status.contexts[]? | { context: . }]
+              + [{ context: $check }])
+            | unique_by_context
+          )
+        }
+    ' <<< "${EXISTING_PROTECTION}"
+  )"
+
+  gh api \
+    --method PATCH \
+    -H "Accept: application/vnd.github+json" \
+    "repos/${REPO}/branches/${BRANCH}/protection/required_status_checks" \
+    --input - <<< "${STATUS_CHECKS_PAYLOAD}"
+else
+  gh api \
+    --method PUT \
+    -H "Accept: application/vnd.github+json" \
+    "repos/${REPO}/branches/${BRANCH}/protection" \
+    --input - <<JSON
 {
   "required_status_checks": {
     "strict": true,
@@ -40,6 +70,7 @@ gh api \
   "restrictions": null
 }
 JSON
+fi
 
 echo ""
 echo "Branch protection applied. Required status checks:"
