@@ -1,13 +1,18 @@
 #!/usr/bin/env bash
 #
-# Configure branch protection on the default branch so the CI status check
-# ("Build & Test" from .github/workflows/ci.yml) is REQUIRED before a pull
-# request can be merged. This makes the CI gate a hard merge gate rather than
-# an advisory check.
+# Ensure the CI status check ("Build & Test" from .github/workflows/ci.yml) is a
+# REQUIRED status check on the default branch, so a failing CI run blocks merging.
+#
+# This script is additive and idempotent:
+#   - If branch protection already exists, it adds the required check via the
+#     dedicated required_status_checks endpoint, preserving existing rules
+#     (required reviews, push restrictions, other required checks).
+#   - If no branch protection exists, it creates a minimal policy with just the
+#     required CI check.
 #
 # Requirements:
-#   - gh CLI authenticated (`gh auth status`)
-#   - admin permission on the target repository
+#   - gh CLI authenticated (`gh auth status`) with admin permission on the repo
+#   - jq
 #
 # Usage:
 #   scripts/setup-branch-protection.sh [owner/repo] [branch]
@@ -20,27 +25,36 @@ REPO="${1:-$(gh repo view --json nameWithOwner --jq .nameWithOwner)}"
 BRANCH="${2:-main}"
 CHECK_CONTEXT="${CHECK_CONTEXT:-Build & Test}"
 
-echo "Configuring branch protection on ${REPO}@${BRANCH}"
-echo "Requiring status check: ${CHECK_CONTEXT}"
+API="repos/${REPO}/branches/${BRANCH}/protection"
 
-gh api \
-  --method PUT \
-  -H "Accept: application/vnd.github+json" \
-  "repos/${REPO}/branches/${BRANCH}/protection" \
-  --input - <<JSON
+echo "Ensuring branch protection on ${REPO}@${BRANCH} requires check: ${CHECK_CONTEXT}"
+
+if gh api "${API}" >/dev/null 2>&1; then
+  echo "Existing protection found — adding the required check without altering other rules."
+
+  # Read existing required-check contexts (empty array if none are configured yet).
+  existing="$(gh api "${API}/required_status_checks" --jq '[.checks[].context]' 2>/dev/null || echo '[]')"
+  merged="$(jq -cn --argjson e "${existing:-[]}" --arg c "${CHECK_CONTEXT}" '($e + [$c]) | unique')"
+  payload="$(jq -cn --argjson ctx "${merged}" '{strict: true, checks: [$ctx[] | {context: .}]}')"
+
+  printf '%s' "${payload}" | gh api --method PATCH \
+    -H "Accept: application/vnd.github+json" \
+    "${API}/required_status_checks" --input - >/dev/null
+else
+  echo "No existing protection — creating a minimal policy with the required check."
+
+  gh api --method PUT \
+    -H "Accept: application/vnd.github+json" \
+    "${API}" --input - >/dev/null <<JSON
 {
-  "required_status_checks": {
-    "strict": true,
-    "checks": [
-      { "context": "${CHECK_CONTEXT}" }
-    ]
-  },
+  "required_status_checks": { "strict": true, "checks": [ { "context": "${CHECK_CONTEXT}" } ] },
   "enforce_admins": false,
   "required_pull_request_reviews": null,
   "restrictions": null
 }
 JSON
+fi
 
 echo ""
-echo "Branch protection applied. Required status checks:"
-gh api "repos/${REPO}/branches/${BRANCH}/protection" --jq '.required_status_checks'
+echo "Done. Required status checks now:"
+gh api "${API}/required_status_checks" --jq '{strict: .strict, contexts: [.checks[].context]}'
