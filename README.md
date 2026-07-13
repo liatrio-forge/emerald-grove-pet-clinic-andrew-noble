@@ -47,6 +47,7 @@ Access the application at `http://localhost:8080`
 - **[Architecture Guide](docs/ARCHITECTURE.md)** - System design and technical decisions
 - **[Testing Guide](docs/TESTING.md)** - Comprehensive testing strategies and patterns
 - **[E2E Tests (Playwright)](docs/TESTING.md#end-to-end-e2e-browser-tests-playwright)** - How to run browser-based end-to-end tests
+- **[CI/CD Pipeline](docs/CICD.md)** - Build/test gate, image publishing, and AWS App Runner deployment
 
 ## Development Standards
 
