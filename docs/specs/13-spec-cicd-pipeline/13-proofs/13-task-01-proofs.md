@@ -125,6 +125,12 @@ BLOCKED`, and `main` requires the `Build & Test` check with `strict: true`.
 { "strict": true, "required": ["Build & Test"] }
 ```
 
+**Follow-up (PR review):** Cursor Bugbot flagged that the original script's full `PUT` could
+overwrite pre-existing protection. The script was hardened to be additive/idempotent — when
+protection already exists it merges the `Build & Test` context via the `required_status_checks`
+endpoint, preserving required reviews, restrictions, and other checks. Re-running it is a no-op
+that keeps `contexts: ["Build & Test"], strict: true`.
+
 ## Artifact: Local quality gates pass
 
 **What it proves:** The new workflow, script, and docs satisfy the repo's pre-commit gates.
