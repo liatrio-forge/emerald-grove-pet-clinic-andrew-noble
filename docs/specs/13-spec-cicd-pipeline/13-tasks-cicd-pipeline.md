@@ -51,7 +51,7 @@ layer is built on top (3.0–4.0).
 
 ## Tasks
 
-### [~] 1.0 Pull Request Build & Test Gate (`ci.yml`) + branch protection
+### [x] 1.0 Pull Request Build & Test Gate (`ci.yml`) + branch protection
 
 Adds a server-side build+test gate on every PR (and `push` to `main`) via `./mvnw verify`, uploads
 the JaCoCo report, and enforces the check as a required status check on `main` so broken code cannot
@@ -76,11 +76,11 @@ merge. Delivers Spec Unit 1.
   `java-version: 17`, `cache: maven`); run `./mvnw verify`.
 - [x] 1.3 Add a step to upload the JaCoCo report (`target/site/jacoco/`) as an artifact named
   `jacoco` with `if: always()`.
-- [~] 1.4 Validate the workflow locally with `actionlint` and `pre-commit run check-yaml`, then push
+- [x] 1.4 Validate the workflow locally with `actionlint` and `pre-commit run check-yaml`, then push
   a feature branch and open a PR; capture the **passing** "CI" check screenshot.
-- [~] 1.5 On a throwaway branch, add a deliberately failing unit test, open a PR, and capture the
+- [x] 1.5 On a throwaway branch, add a deliberately failing unit test, open a PR, and capture the
   **failing** "CI" check with the merge blocked; then discard the branch/test.
-- [~] 1.6 Write `scripts/setup-branch-protection.sh` (`gh api`) to require the `CI` status check on
+- [x] 1.6 Write `scripts/setup-branch-protection.sh` (`gh api`) to require the `CI` status check on
   `main`; run it and capture the `gh api .../branches/main/protection` output. Ensure it passes
   `shellcheck`.
 - [x] 1.7 Add a CI/CD section to `README.md` linking to `docs/CICD.md`; document the CI gate and
