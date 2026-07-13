@@ -19,7 +19,9 @@ package org.springframework.samples.petclinic.service;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -35,7 +37,9 @@ import org.springframework.samples.petclinic.owner.OwnerRepository;
 import org.springframework.samples.petclinic.owner.Pet;
 import org.springframework.samples.petclinic.owner.PetType;
 import org.springframework.samples.petclinic.owner.PetTypeRepository;
+import org.springframework.samples.petclinic.owner.ScheduledAppointment;
 import org.springframework.samples.petclinic.owner.Visit;
+import org.springframework.samples.petclinic.owner.VisitRepository;
 import org.springframework.samples.petclinic.vet.Vet;
 import org.springframework.samples.petclinic.vet.VetRepository;
 import org.springframework.transaction.annotation.Transactional;
@@ -82,6 +86,9 @@ class ClinicServiceTests {
 
 	@Autowired
 	protected VetRepository vets;
+
+	@Autowired
+	protected VisitRepository visitRepository;
 
 	@Autowired
 	private TestEntityManager entityManager;
@@ -264,6 +271,8 @@ class ClinicServiceTests {
 		int found = pet7.getVisits().size();
 		Visit visit = new Visit();
 		visit.setDescription("test");
+		visit.setStartTime(LocalTime.of(9, 0));
+		visit.setVet(this.vets.findAll().iterator().next());
 
 		owner6.addVisit(pet7.getId(), visit);
 		this.owners.save(owner6);
@@ -271,6 +280,111 @@ class ClinicServiceTests {
 		assertThat(pet7.getVisits()) //
 			.hasSize(found + 1) //
 			.allMatch(value -> value.getId() != null);
+	}
+
+	@Test
+	@Transactional
+	void shouldPersistVisitWithStartTimeAndVet() {
+		Optional<Owner> optionalOwner = this.owners.findById(6);
+		assertThat(optionalOwner).isPresent();
+		Owner owner6 = optionalOwner.get();
+		Pet pet7 = owner6.getPet(7);
+
+		Vet vet = this.vets.findAll().iterator().next();
+
+		Visit appointment = new Visit();
+		appointment.setDescription("time-and-vet appointment");
+		appointment.setStartTime(LocalTime.of(9, 30));
+		appointment.setVet(vet);
+		owner6.addVisit(pet7.getId(), appointment);
+		this.owners.save(owner6);
+
+		this.entityManager.flush();
+		this.entityManager.clear();
+
+		Owner reloaded = this.owners.findById(6).orElseThrow();
+		Visit saved = reloaded.getPet(7)
+			.getVisits()
+			.stream()
+			.filter(v -> "time-and-vet appointment".equals(v.getDescription()))
+			.findFirst()
+			.orElseThrow();
+		assertThat(saved.getStartTime()).isEqualTo(LocalTime.of(9, 30));
+		assertThat(saved.getEndTime()).isEqualTo(LocalTime.of(10, 0));
+		assertThat(saved.getVet()).isNotNull();
+		assertThat(saved.getVet().getId()).isEqualTo(vet.getId());
+	}
+
+	@Test
+	@Transactional
+	void shouldFindAppointmentsByVetAndByPetOnDate() {
+		LocalDate date = LocalDate.of(2099, 5, 1);
+		Vet vet = this.vets.findAll().iterator().next();
+		Owner owner6 = this.owners.findById(6).orElseThrow();
+		Pet pet7 = owner6.getPet(7);
+
+		Visit nine = new Visit();
+		nine.setDate(date);
+		nine.setStartTime(LocalTime.of(9, 0));
+		nine.setVet(vet);
+		nine.setDescription("nine");
+		Visit ten = new Visit();
+		ten.setDate(date);
+		ten.setStartTime(LocalTime.of(10, 0));
+		ten.setVet(vet);
+		ten.setDescription("ten");
+		owner6.addVisit(pet7.getId(), nine);
+		owner6.addVisit(pet7.getId(), ten);
+		this.owners.save(owner6);
+		this.entityManager.flush();
+
+		assertThat(this.visitRepository.findByVetAndDate(vet.getId(), date)).hasSize(2);
+		assertThat(this.visitRepository.findByPetAndDate(pet7.getId(), date)).hasSize(2);
+		assertThat(this.visitRepository.findByVetAndDate(vet.getId(), date.plusDays(1))).isEmpty();
+	}
+
+	@Test
+	@Transactional
+	void shouldFindClinicWideAppointmentsByDateOrderedByTime() {
+		LocalDate date = LocalDate.of(2099, 7, 1);
+		Vet vet = this.vets.findAll().iterator().next();
+		Owner owner6 = this.owners.findById(6).orElseThrow();
+		Pet pet7 = owner6.getPet(7);
+
+		Visit later = new Visit();
+		later.setDate(date);
+		later.setStartTime(LocalTime.of(11, 0));
+		later.setVet(vet);
+		later.setDescription("later");
+		Visit earlier = new Visit();
+		earlier.setDate(date);
+		earlier.setStartTime(LocalTime.of(9, 0));
+		earlier.setVet(vet);
+		earlier.setDescription("earlier");
+		owner6.addVisit(pet7.getId(), later);
+		owner6.addVisit(pet7.getId(), earlier);
+		this.owners.save(owner6);
+		this.entityManager.flush();
+		this.entityManager.clear();
+
+		List<ScheduledAppointment> result = this.visitRepository.findScheduledAppointmentsByDate(date);
+
+		assertThat(result).extracting(ScheduledAppointment::getStartTime)
+			.containsExactly(LocalTime.of(9, 0), LocalTime.of(11, 0));
+		assertThat(result.get(0).getDescription()).isEqualTo("earlier");
+		assertThat(result.get(0).getVetName()).isNotBlank();
+	}
+
+	@Test
+	void findByVetAndDateExcludesLegacyNullVetVisits() {
+		// Seed pet 7 has a legacy visit on 2013-01-01 whose vet is NULL.
+		LocalDate legacyDate = LocalDate.of(2013, 1, 1);
+		Vet vet = this.vets.findAll().iterator().next();
+
+		// The null-vet legacy row never appears as a vet conflict...
+		assertThat(this.visitRepository.findByVetAndDate(vet.getId(), legacyDate)).isEmpty();
+		// ...but the pet-level query still finds it.
+		assertThat(this.visitRepository.findByPetAndDate(7, legacyDate)).hasSize(1);
 	}
 
 	@Test
@@ -324,6 +438,61 @@ class ClinicServiceTests {
 			.createNativeQuery("SELECT COUNT(*) FROM visits WHERE pet_id = 7")
 			.getSingleResult();
 		assertThat(visitsAfter.intValue()).isZero();
+	}
+
+	@Test
+	@Transactional
+	void scheduleOrdersTiedStartTimesByPetNameForStableOutput() {
+		// Owner 6 (Jean Coleman) owns Samantha (pet 7) and Max (pet 8). Book both at the
+		// same start time for the same vet so start time and vet last name tie, leaving
+		// pet name as the deciding key.
+		LocalDate date = LocalDate.of(2099, 8, 1);
+		Vet vet = this.vets.findAll().iterator().next();
+		Owner owner6 = this.owners.findById(6).orElseThrow();
+
+		Visit samanthaVisit = new Visit();
+		samanthaVisit.setDate(date);
+		samanthaVisit.setStartTime(LocalTime.of(9, 0));
+		samanthaVisit.setVet(vet);
+		samanthaVisit.setDescription("Samantha");
+		Visit maxVisit = new Visit();
+		maxVisit.setDate(date);
+		maxVisit.setStartTime(LocalTime.of(9, 0));
+		maxVisit.setVet(vet);
+		maxVisit.setDescription("Max");
+		// Insert Samantha (pet 7) before Max (pet 8): insertion order is the reverse of
+		// the expected alphabetical pet-name order, so a missing tiebreaker would
+		// surface.
+		owner6.addVisit(7, samanthaVisit);
+		owner6.addVisit(8, maxVisit);
+		this.owners.save(owner6);
+		this.entityManager.flush();
+		this.entityManager.clear();
+
+		List<ScheduledAppointment> result = this.visitRepository.findScheduledAppointmentsByDate(date);
+
+		assertThat(result).extracting(ScheduledAppointment::getPetName).containsExactly("Max", "Samantha");
+	}
+
+	@Test
+	@Transactional
+	void editingOwnerWithLegacyNullVetVisitsDoesNotFailValidation() {
+		// Owner 6 owns pets 7 and 8, which have legacy visits seeded with vet_id = NULL.
+		// The @NotNull on Visit.vet must not block flushing an unrelated owner edit: it
+		// is
+		// only applied to inserted/updated (dirty) visits, not untouched legacy rows.
+		Owner owner6 = this.owners.findById(6).orElseThrow();
+		assertThat(this.visitRepository.findByPetAndDate(7, LocalDate.of(2013, 1, 1))).hasSize(1);
+
+		owner6.setCity("Relocated City");
+		this.owners.save(owner6);
+		this.entityManager.flush();
+		this.entityManager.clear();
+
+		Owner reloaded = this.owners.findById(6).orElseThrow();
+		assertThat(reloaded.getCity()).isEqualTo("Relocated City");
+		// The legacy null-vet visit is untouched and still present.
+		assertThat(this.visitRepository.findByPetAndDate(7, LocalDate.of(2013, 1, 1))).hasSize(1);
 	}
 
 }

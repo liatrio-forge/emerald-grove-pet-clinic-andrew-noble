@@ -19,6 +19,7 @@ package org.springframework.samples.petclinic.model;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Locale;
 import java.util.Set;
 
@@ -26,6 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.samples.petclinic.owner.Visit;
+import org.springframework.samples.petclinic.vet.Vet;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import jakarta.validation.ConstraintViolation;
@@ -80,6 +82,8 @@ class ValidatorTests {
 		LocaleContextHolder.setLocale(Locale.ENGLISH);
 		Visit visit = new Visit();
 		visit.setDescription("Checkup");
+		visit.setStartTime(LocalTime.of(9, 0));
+		visit.setVet(new Vet());
 		visit.setDate(LocalDate.now().minusDays(1));
 
 		Validator validator = createValidatorWithMessages();
@@ -96,6 +100,8 @@ class ValidatorTests {
 		LocaleContextHolder.setLocale(Locale.ENGLISH);
 		Visit visit = new Visit();
 		visit.setDescription("Checkup");
+		visit.setStartTime(LocalTime.of(9, 0));
+		visit.setVet(new Vet());
 		visit.setDate(LocalDate.now());
 
 		Validator validator = createValidator();
@@ -109,6 +115,8 @@ class ValidatorTests {
 		LocaleContextHolder.setLocale(Locale.ENGLISH);
 		Visit visit = new Visit();
 		visit.setDescription("Checkup");
+		visit.setStartTime(LocalTime.of(9, 0));
+		visit.setVet(new Vet());
 		visit.setDate(LocalDate.now().plusDays(1));
 
 		Validator validator = createValidator();
