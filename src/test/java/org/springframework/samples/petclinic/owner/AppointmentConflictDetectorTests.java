@@ -16,10 +16,14 @@
 package org.springframework.samples.petclinic.owner;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
 
 import java.time.LocalTime;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.InOrder;
+import org.springframework.samples.petclinic.vet.Vet;
 
 /**
  * Unit tests for the pure overlap rule in {@link AppointmentConflictDetector}.
@@ -62,6 +66,20 @@ class AppointmentConflictDetectorTests {
 	@Test
 	void fullySeparateAppointmentsDoNotConflict() {
 		assertThat(this.detector.overlaps(LocalTime.of(9, 0), LocalTime.of(11, 0))).isFalse();
+	}
+
+	@Test
+	void locksVetThenPetResources() {
+		VisitRepository visits = mock(VisitRepository.class);
+		AppointmentConflictDetector detector = new AppointmentConflictDetector(visits);
+		Vet vet = new Vet();
+		vet.setId(1);
+
+		detector.lockAppointmentResources(vet, 2);
+
+		InOrder inOrder = inOrder(visits);
+		inOrder.verify(visits).lockVetById(1);
+		inOrder.verify(visits).lockPetById(2);
 	}
 
 }

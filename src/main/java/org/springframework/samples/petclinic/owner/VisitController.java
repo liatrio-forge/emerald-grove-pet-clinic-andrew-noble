@@ -49,12 +49,13 @@ class VisitController {
 
 	private final VetRepository vets;
 
-	private final AppointmentConflictDetector conflictDetector;
+	private final AppointmentBookingService appointmentBookingService;
 
-	public VisitController(OwnerRepository owners, VetRepository vets, AppointmentConflictDetector conflictDetector) {
+	public VisitController(OwnerRepository owners, VetRepository vets,
+			AppointmentBookingService appointmentBookingService) {
 		this.owners = owners;
 		this.vets = vets;
-		this.conflictDetector = conflictDetector;
+		this.appointmentBookingService = appointmentBookingService;
 	}
 
 	@InitBinder
@@ -108,21 +109,15 @@ class VisitController {
 	@PostMapping("/owners/{ownerId}/pets/{petId}/visits/new")
 	public String processNewVisitForm(@ModelAttribute Owner owner, @PathVariable int petId, @Valid Visit visit,
 			BindingResult result, RedirectAttributes redirectAttributes) {
-		if (!result.hasErrors()) {
-			boolean conflict = this.conflictDetector.hasVetConflict(visit.getVet(), visit.getDate(),
-					visit.getStartTime())
-					|| this.conflictDetector.hasPetConflict(petId, visit.getDate(), visit.getStartTime());
-			if (conflict) {
-				result.rejectValue("startTime", "visit.conflict", "This time conflicts with an existing appointment.");
-			}
-		}
-
 		if (result.hasErrors()) {
 			return "pets/createOrUpdateVisitForm";
 		}
 
-		owner.addVisit(petId, visit);
-		this.owners.save(owner);
+		if (!this.appointmentBookingService.bookNewVisit(owner, petId, visit)) {
+			result.rejectValue("startTime", "visit.conflict", "This time conflicts with an existing appointment.");
+			return "pets/createOrUpdateVisitForm";
+		}
+
 		redirectAttributes.addFlashAttribute("message", "Your visit has been booked");
 		return "redirect:/owners/{ownerId}";
 	}

@@ -440,4 +440,59 @@ class ClinicServiceTests {
 		assertThat(visitsAfter.intValue()).isZero();
 	}
 
+	@Test
+	@Transactional
+	void scheduleOrdersTiedStartTimesByPetNameForStableOutput() {
+		// Owner 6 (Jean Coleman) owns Samantha (pet 7) and Max (pet 8). Book both at the
+		// same start time for the same vet so start time and vet last name tie, leaving
+		// pet name as the deciding key.
+		LocalDate date = LocalDate.of(2099, 8, 1);
+		Vet vet = this.vets.findAll().iterator().next();
+		Owner owner6 = this.owners.findById(6).orElseThrow();
+
+		Visit samanthaVisit = new Visit();
+		samanthaVisit.setDate(date);
+		samanthaVisit.setStartTime(LocalTime.of(9, 0));
+		samanthaVisit.setVet(vet);
+		samanthaVisit.setDescription("Samantha");
+		Visit maxVisit = new Visit();
+		maxVisit.setDate(date);
+		maxVisit.setStartTime(LocalTime.of(9, 0));
+		maxVisit.setVet(vet);
+		maxVisit.setDescription("Max");
+		// Insert Samantha (pet 7) before Max (pet 8): insertion order is the reverse of
+		// the expected alphabetical pet-name order, so a missing tiebreaker would
+		// surface.
+		owner6.addVisit(7, samanthaVisit);
+		owner6.addVisit(8, maxVisit);
+		this.owners.save(owner6);
+		this.entityManager.flush();
+		this.entityManager.clear();
+
+		List<ScheduledAppointment> result = this.visitRepository.findScheduledAppointmentsByDate(date);
+
+		assertThat(result).extracting(ScheduledAppointment::getPetName).containsExactly("Max", "Samantha");
+	}
+
+	@Test
+	@Transactional
+	void editingOwnerWithLegacyNullVetVisitsDoesNotFailValidation() {
+		// Owner 6 owns pets 7 and 8, which have legacy visits seeded with vet_id = NULL.
+		// The @NotNull on Visit.vet must not block flushing an unrelated owner edit: it
+		// is
+		// only applied to inserted/updated (dirty) visits, not untouched legacy rows.
+		Owner owner6 = this.owners.findById(6).orElseThrow();
+		assertThat(this.visitRepository.findByPetAndDate(7, LocalDate.of(2013, 1, 1))).hasSize(1);
+
+		owner6.setCity("Relocated City");
+		this.owners.save(owner6);
+		this.entityManager.flush();
+		this.entityManager.clear();
+
+		Owner reloaded = this.owners.findById(6).orElseThrow();
+		assertThat(reloaded.getCity()).isEqualTo("Relocated City");
+		// The legacy null-vet visit is untouched and still present.
+		assertThat(this.visitRepository.findByPetAndDate(7, LocalDate.of(2013, 1, 1))).hasSize(1);
+	}
+
 }

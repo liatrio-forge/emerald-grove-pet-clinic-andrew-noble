@@ -54,6 +54,18 @@ public class AppointmentConflictDetector {
 	}
 
 	/**
+	 * Lock the resources whose schedules are about to be checked and updated.
+	 * @param vet the veterinarian being booked, may be {@code null}
+	 * @param petId the pet being booked
+	 */
+	public void lockAppointmentResources(Vet vet, int petId) {
+		if (vet != null && vet.getId() != null) {
+			this.visits.lockVetById(vet.getId());
+		}
+		this.visits.lockPetById(petId);
+	}
+
+	/**
 	 * Whether booking the given vet at the given date/time would overlap an existing
 	 * appointment for that same vet. No conflict is reported when no vet is assigned
 	 * (legacy null-vet rows never produce a vet conflict).
