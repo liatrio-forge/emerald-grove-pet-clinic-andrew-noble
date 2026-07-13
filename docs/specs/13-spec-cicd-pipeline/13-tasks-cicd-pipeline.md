@@ -86,7 +86,7 @@ merge. Delivers Spec Unit 1.
 - [x] 1.7 Add a CI/CD section to `README.md` linking to `docs/CICD.md`; document the CI gate and
   branch-protection setup in `docs/CICD.md`.
 
-### [ ] 2.0 Build & Publish Deployable Image to GHCR (`cd.yml` build job)
+### [~] 2.0 Build & Publish Deployable Image to GHCR (`cd.yml` build job)
 
 On `push` to `main`, builds the app container image with Spring Boot buildpacks and publishes it to
 GHCR tagged `:<sha>` and `:latest`, using only `GITHUB_TOKEN` (no AWS). This is the "artifact built
@@ -104,17 +104,17 @@ Unit 2.
 
 #### 2.0 Tasks
 
-- [ ] 2.1 Create `.github/workflows/cd.yml` triggered on `push` to `main` (add `workflow_dispatch`
+- [~] 2.1 Create `.github/workflows/cd.yml` triggered on `push` to `main` (add `workflow_dispatch`
   for manual test runs), with a `build` job and `permissions: contents: read, packages: write` and a
   `timeout-minutes` guard.
-- [ ] 2.2 Add build steps: `actions/checkout@v4`; `actions/setup-java@v4` (Temurin 17, `cache:
+- [~] 2.2 Add build steps: `actions/checkout@v4`; `actions/setup-java@v4` (Temurin 17, `cache:
   maven`); compute tags from `${{ github.sha }}` and `latest`.
-- [ ] 2.3 Log in to GHCR with `docker/login-action@v3` using `${{ github.actor }}` and
+- [~] 2.3 Log in to GHCR with `docker/login-action@v3` using `${{ github.actor }}` and
   `${{ secrets.GITHUB_TOKEN }}`.
-- [ ] 2.4 Build the image with `./mvnw spring-boot:build-image` named
+- [~] 2.4 Build the image with `./mvnw spring-boot:build-image` named
   `ghcr.io/${{ github.repository }}:${{ github.sha }}`, then `docker tag` it `:latest` and
   `docker push` both tags.
-- [ ] 2.5 Expose the published `:<sha>` reference as a `build` job output (for the future deploy
+- [~] 2.5 Expose the published `:<sha>` reference as a `build` job output (for the future deploy
   job) using `$GITHUB_OUTPUT`.
 - [ ] 2.6 Validate by running the workflow (via `workflow_dispatch` or a merge to `main`); capture
   the build-job log, the GHCR package page (both tags), and a successful `docker pull` of the

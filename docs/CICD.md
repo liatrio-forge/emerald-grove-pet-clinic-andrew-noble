@@ -56,14 +56,17 @@ gh api repos/:owner/:repo/branches/main/protection --jq '.required_status_checks
 
 ## Continuous Delivery — `cd.yml`
 
-**Status: planned (Tasks 2.0 and 4.0).** This section will be completed as those tasks land.
-
-- **Build job (Task 2.0):** on `push` to `main`, builds the container image with Spring Boot
-  buildpacks and publishes it to GitHub Container Registry (GHCR) tagged with the commit SHA and
-  `latest`, authenticated with the built-in `GITHUB_TOKEN`.
-- **Deploy job (Task 4.0):** runs inside a `production` GitHub Environment that requires manual
-  reviewer approval, authenticates to AWS via OIDC (no stored keys), pushes the image to ECR, and
-  triggers an App Runner deployment pinned to the exact commit image, waiting for `RUNNING`.
+- **Build job (Task 2.0): implemented.** On `push` to `main` (or manual `workflow_dispatch`), it
+  checks out the code, sets up Temurin JDK 17, builds the container image with Spring Boot
+  buildpacks (`./mvnw spring-boot:build-image`), logs in to GHCR with the built-in `GITHUB_TOKEN`
+  (`packages: write`), and pushes the image tagged with both the commit SHA (`:<sha>`) and
+  `:latest`. The `:<sha>` reference is exposed as a job output for the deploy job. Find published
+  images under the repository's **Packages** (GHCR), e.g.
+  `ghcr.io/<owner>/<repo>:<sha>`.
+- **Deploy job (Task 4.0): planned.** Runs inside a `production` GitHub Environment that requires
+  manual reviewer approval, authenticates to AWS via OIDC (no stored keys), pushes the image to
+  ECR, and triggers an App Runner deployment pinned to the exact commit image, waiting for
+  `RUNNING`.
 
 ### Why two registries
 
