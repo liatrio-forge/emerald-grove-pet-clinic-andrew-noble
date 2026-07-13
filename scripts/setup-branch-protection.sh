@@ -32,10 +32,10 @@ echo "Ensuring branch protection on ${REPO}@${BRANCH} requires check: ${CHECK_CO
 if gh api "${API}" >/dev/null 2>&1; then
   echo "Existing protection found — adding the required check without altering other rules."
 
-  # Read existing required-check contexts (empty array if none are configured yet).
-  existing="$(gh api "${API}/required_status_checks" --jq '[.checks[].context]' 2>/dev/null || echo '[]')"
-  merged="$(jq -cn --argjson e "${existing:-[]}" --arg c "${CHECK_CONTEXT}" '($e + [$c]) | unique')"
-  payload="$(jq -cn --argjson ctx "${merged}" '{strict: true, checks: [$ctx[] | {context: .}]}')"
+  # Read existing required checks (empty array if none are configured yet).
+  existing="$(gh api "${API}/required_status_checks" --jq '.checks // []' 2>/dev/null || echo '[]')"
+  merged="$(jq -cn --argjson e "${existing:-[]}" --arg c "${CHECK_CONTEXT}" 'if any($e[]?; .context == $c) then $e else ($e + [{context: $c}]) end')"
+  payload="$(jq -cn --argjson checks "${merged}" '{strict: true, checks: $checks}')"
 
   printf '%s' "${payload}" | gh api --method PATCH \
     -H "Accept: application/vnd.github+json" \
